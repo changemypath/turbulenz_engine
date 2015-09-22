@@ -11,7 +11,7 @@ import StringIO
 import argparse
 
 NODEJS_VERSION = 'v0.10.29'
-TYPESCRIPT_VERSION = '1.0.1'
+TYPESCRIPT_VERSION = '1.4'
 
 NODEJS_DIST = 'http://nodejs.org/dist'
 PLATFORM = sys.platform
