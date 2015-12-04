@@ -1,15 +1,16 @@
 
 // ArrayBuffer
-interface ArrayBuffer
+export interface ArrayBuffer
 {
     slice(begin: number, end?: number): ArrayBuffer;
 }
 
 // Uint8ClampedArray
-interface Uint8ClampedArray extends Uint8Array
+export interface Uint8ClampedArray extends Uint8Array
 {
 }
-declare var Uint8ClampedArray:
+
+export declare var Uint8ClampedArray:
 {
     prototype: Uint8Array;
     new (length: number): Uint8Array;
@@ -19,12 +20,12 @@ declare var Uint8ClampedArray:
     BYTES_PER_ELEMENT: number;
 };
 
-interface Float32Array
+export interface Float32Array
 {
     slice(s: number, e: number): Float32Array; // defined in vmath
-    map(offset: number, numFloats: number): void;
+    map(offset: number, numFloats: number): any;
     unmap(writer: any): void;
-    setData(data, offset?: number, numFloats?: number): void;
+    setData(data: any, offset?: number, numFloats?: number): void;
 }
 
 // HTMLImageElement
@@ -33,8 +34,10 @@ interface Float32Array
 //     crossOrigin: string;
 // }
 
+export declare var window: any;
+
 // Window
-interface Window
+export interface Window
 {
     XMLHttpRequest:
     {
@@ -84,13 +87,13 @@ interface Window
 
 }
 
-interface WebSocket
+export interface WebSocket
 {
     destroy?: () => void;
 }
 
 // Document
-interface Document
+export interface Document
 {
     webkitCancelFullScreen?: { () : void; };
     cancelFullScreen?: { (): void; };
@@ -119,7 +122,7 @@ interface Document
 }
 
 // Navigator
-interface Navigator
+export interface Navigator
 {
     gamepads?: any[];
     webkitGamepads?: any[];
@@ -144,7 +147,7 @@ interface Navigator
     language: string;
 }
 
-interface HTMLVideoElement
+export interface HTMLVideoElement
 {
     webkitDecodedFrameCount: number;
     crossorigin: string;
@@ -152,12 +155,12 @@ interface HTMLVideoElement
     //canPlayType(type: string): boolean
 }
 
-interface HTMLAudioElement
+export interface HTMLAudioElement
 {
     mozSetup(channels: number, sampleRate: number);
 }
 
-interface HTMLCanvasElement
+export interface HTMLCanvasElement
 {
 
 }

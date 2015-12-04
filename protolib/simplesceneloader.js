@@ -202,3 +202,6 @@ SimpleSceneLoader.create = function simpleSceneLoaderCreateFn(globals)
 
     return simpleSceneLoader;
 };
+
+exports.SimpleSceneLoader = SimpleSceneLoader;
+module.id = "simplesceneloader";

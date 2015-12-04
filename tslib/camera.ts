@@ -1,9 +1,15 @@
 // Copyright (c) 2009-2014 Turbulenz Limited
+import {Touch} from './webgl/touch.ts';
+import toucheventi = require('./webgl/touchevent.ts');
+import t = require('./turbulenz.d.ts');
+import {Log} from '../../turbulenz/libs/log.ts';
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../tslib/turbulenz.d.ts';
+
 
 //
 // Camera
 //
-class Camera
+export class Camera
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -517,14 +523,14 @@ Camera.prototype._tempXAxis = null; // v3
 // CameraController
 //
 
-interface CameraControllerTouch
+export interface CameraControllerTouch
 {
     id: number;
     originX: number;
     originY: number;
 };
 
-class CameraController
+export class CameraController
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -564,9 +570,9 @@ class CameraController
                           rX: number, rY: number, rZ: number,
                           dpadState : number): void; };
     onmouselocklost  : { (): void; };
-    ontouchstart     : { (touchEvent: TouchEvent): void; };
-    ontouchend       : { (touchEvent: TouchEvent): void; };
-    ontouchmove      : { (touchEvent: TouchEvent): void; };
+    ontouchstart     : { (touchEvent: t.TouchEvent): void; };
+    ontouchend       : { (touchEvent: t.TouchEvent): void; };
+    ontouchmove      : { (touchEvent: t.TouchEvent): void; };
 
     rotate(turn, pitch)
     {
@@ -922,7 +928,7 @@ class CameraController
             id.unlockMouse();
         };
 
-        c.ontouchstart = function ontouchstartFn(touchEvent)
+        c.ontouchstart = function ontouchstartFn(touchEvent: t.TouchEvent)
         {
             var changedTouches = touchEvent.changedTouches;
             var numTouches = changedTouches.length;
@@ -950,7 +956,7 @@ class CameraController
             }
         };
 
-        c.ontouchend = function ontouchendFn(touchEvent)
+        c.ontouchend = function ontouchendFn(touchEvent: t.TouchEvent)
         {
             var changedTouches = touchEvent.changedTouches;
             var numTouches = changedTouches.length;
@@ -979,7 +985,7 @@ class CameraController
             }
         };
 
-        c.ontouchmove = function ontouchmoveFn(touchEvent)
+        c.ontouchmove = function ontouchmoveFn(touchEvent: t.TouchEvent)
         {
             var changedTouches = touchEvent.changedTouches;
             var numTouches = changedTouches.length;

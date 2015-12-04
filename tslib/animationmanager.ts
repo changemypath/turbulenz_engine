@@ -1,15 +1,21 @@
 // Copyright (c) 2010-2014 Turbulenz Limited
+import animationi = require('./animation.ts');
+import debugi = require('./debug.ts');
+var debug = debugi.debug;
+import {Log} from '../../turbulenz/libs/log.ts';
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../tslib/turbulenz.d.ts';
+import {turbulenzEngine} from '../tslib/turbulenz.d.ts';
 
-/*global TurbulenzEngine: false*/
+/*global turbulenzEngine: false*/
 
 // -----------------------------------------------------------------------------
 
-interface AnimationList
+export interface AnimationList
 {
-    [name: string]: Animation;
+    [name: string]: animationi.Animation;
 };
 
-class AnimationManager
+export class AnimationManager
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -22,11 +28,11 @@ class AnimationManager
     { debug.abort("abstract method"); }
     loadData(data: any, prefix?: string)
     { debug.abort("abstract method"); }
-    get(name: string): Animation
+    get(name: string): animationi.Animation
     { debug.abort("abstract method"); return null; }
     remove(name: string)
     { debug.abort("abstract method"); }
-    nodeHasSkeleton(node: Node): Skeleton
+    nodeHasSkeleton(node: Node): animationi.Skeleton
     { debug.abort("abstract method"); return null; }
     getAll(): AnimationList
     { debug.abort("abstract method"); return null; }
@@ -276,7 +282,7 @@ class AnimationManager
             }
         };
 
-        var nodeHasSkeleton = function nodeHasSkeletonFn(node) : Skeleton
+        var nodeHasSkeleton = function nodeHasSkeletonFn(node) : animationi.Skeleton
         {
             var renderables = node.renderables;
             if (renderables)
@@ -315,7 +321,7 @@ class AnimationManager
         };
 
         var animationManager = new AnimationManager();
-        animationManager.mathDevice = TurbulenzEngine.getMathDevice();
+        animationManager.mathDevice = turbulenzEngine.getMathDevice();
 
         if (log)
         {

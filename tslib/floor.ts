@@ -1,12 +1,16 @@
 // Copyright (c) 2009-2014 Turbulenz Limited
+import camerai = require('./camera.ts');
+import floorgeni = require('../jslib/_generated/floor.ts');
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,TextureParameters,VertexBufferParameters,IndexBufferParameters,RenderTargetParameters,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../tslib/turbulenz.d.ts';
 
-class Floor
+
+export class Floor
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
     /* tslint:enable:no-unused-variable */
 
-    render      : { (gd: GraphicsDevice, camera: Camera): void; };
+    render      : { (gd: GraphicsDevice, camera: camerai.Camera): void; };
     color       : any; // v4
     fadeToColor : any; // v4
     numLines    : number;
@@ -207,7 +211,7 @@ class Floor
         };
 
         // Generated from assets/shaders/floor.cgfx
-        var shader = gd.createShader(floor_cgfx);
+        var shader = gd.createShader(floorgeni.floor_cgfx);
         if (shader)
         {
             technique = shader.getTechnique(0);

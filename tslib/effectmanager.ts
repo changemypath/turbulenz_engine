@@ -1,4 +1,12 @@
 // Copyright (c) 2009-2014 Turbulenz Limited
+import camerai = require('./camera.ts');
+import shadermanageri = require('../tslib/shadermanager.ts');
+import materiali = require('../tslib/material.ts');
+import jsenginei = require('../jslib-modular/jsengine.d.ts');
+import debugi = require('../tslib/debug.ts');
+var debug = debugi.debug;
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,TextureParameters,VertexBufferParameters,IndexBufferParameters,RenderTargetParameters,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../tslib/turbulenz.d.ts';
+
 /*global Utilities: false*/
 
 "use strict";
@@ -6,22 +14,22 @@
 //
 // EffectPrepareObject
 //
-interface EffectPrepareObject
+export interface EffectPrepareObject
 {
-    prepare(renderable: Renderable);
+    prepare(renderable: jsenginei.Renderable);
     shaderName: string;
     techniqueName: string;
     shader?: Shader;
     technique?: Technique;
     techniqueIndex?: number;
-    update(camera: Camera);
-    loadTechniques(shaderManager: ShaderManager);
+    update(camera: camerai.Camera);
+    loadTechniques(shaderManager: shadermanageri.ShaderManager);
 };
 
 //
 // Effect
 //
-class Effect
+export class Effect
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -44,7 +52,7 @@ class Effect
         return effect;
     }
 
-    hashMaterial(material: Material)
+    hashMaterial(material: materiali.Material)
     {
         var texturesNames = material.texturesNames;
         var hashArray = [];
@@ -88,7 +96,7 @@ class Effect
         }
     }
 
-    prepareMaterial(material: Material)
+    prepareMaterial(material: materiali.Material)
     {
         var hash = this.hashMaterial(material);
         var index = this.materialsMap[hash];
@@ -117,7 +125,7 @@ class Effect
         return this.geometryType[geometryType];
     }
 
-    prepare(renderable: Renderable)
+    prepare(renderable: jsenginei.Renderable)
     {
         var prepareObject = this.geometryType[renderable.geometryType];
         if (prepareObject)
@@ -134,7 +142,7 @@ class Effect
 //
 // EffectManager
 //
-class EffectManager
+export class EffectManager
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;

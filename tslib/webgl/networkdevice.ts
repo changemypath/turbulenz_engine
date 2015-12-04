@@ -1,11 +1,12 @@
 // Copyright (c) 2011-2012 Turbulenz Limited
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine,VertexBufferParameters,PhysicsShape,NetworkDevice} from '../turbulenz.d.ts';
 
 "use strict";
 
 //
 // WebGLNetworkDevice
 //
-class WebGLNetworkDevice implements NetworkDevice
+export class WebGLNetworkDevice implements NetworkDevice
 {
     static version = 1;
 
@@ -25,9 +26,9 @@ class WebGLNetworkDevice implements NetworkDevice
             {
                 ws = new WebSocketConstructor(url);
             }
-            if (typeof ws.destroy === "undefined")
+            if (!(typeof ws["destroy"] === "function"))
             {
-                ws.destroy = function websocketDestroyFn()
+                ws["destroy"] = function websocketDestroyFn()
                 {
                     this.onopen = null;
                     this.onerror = null;
@@ -56,4 +57,4 @@ class WebGLNetworkDevice implements NetworkDevice
 }
 
 WebGLNetworkDevice.prototype.WebSocketConstructor =
-    (window.WebSocket ? window.WebSocket : window.MozWebSocket);
+    ((typeof window["WebSocket"] === "function") ? window["WebSocket"] : window["MozWebSocket"]);

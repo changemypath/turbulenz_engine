@@ -1,4 +1,11 @@
 // Copyright (c) 2011 Turbulenz Limited
+import turbulenzservices = require('./turbulenzservices');
+import requesthandleri = require('../requesthandler.ts');
+import u = require('../utilities.ts');
+import debugi = require('../debug.ts');
+var debug = debugi.debug;
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../../tslib/turbulenz.d.ts';
+import {turbulenzEngine} from '../turbulenz.d.ts';
 
 /*global TurbulenzServices: false*/
 
@@ -16,7 +23,7 @@ interface MappingTableDataOverride
     parent?    : string;
 };
 
-interface MappingTableData
+export interface MappingTableData
 {
     urnmapping    : MappingTableDataURNMapping;
     overrides?    : { [profile: string]: MappingTableDataOverride; };
@@ -25,12 +32,12 @@ interface MappingTableData
     version?      : number;
 };
 
-interface MappingTableParameters
+export interface MappingTableParameters
 {
     mappingTableURL?   : string;
     mappingTableData?  : string;
 
-    requestHandler?    : RequestHandler;
+    requestHandler?    : requesthandleri.RequestHandler;
     mappingTablePrefix : string; // Added to all physical paths
     assetPrefix        : string; // Added to paths not found in table
 
@@ -38,7 +45,7 @@ interface MappingTableParameters
     errorCallback?     : MappingTableErrorCB;
 };
 
-class MappingTable
+export class MappingTable
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -129,9 +136,9 @@ class MappingTable
         mappingTable.assetPrefix = params.assetPrefix;
         mappingTable.overrides = {};
 
-        mappingTable.errorCallbackFn = params.errorCallback || TurbulenzServices.defaultErrorCallback;
+        mappingTable.errorCallbackFn = params.errorCallback || turbulenzservices.TurbulenzServices.defaultErrorCallback;
         mappingTable.currentProfile =
-            TurbulenzEngine.getSystemInfo().platformProfile;
+            turbulenzEngine.getSystemInfo().platformProfile;
 
         var onMappingTableLoad =
             function onMappingTableLoadFn(tableData: MappingTableData)
@@ -186,14 +193,14 @@ class MappingTable
         {
             if (params.mappingTableData)
             {
-                TurbulenzEngine.setTimeout(function () {
+                turbulenzEngine.setTimeout(function () {
                     onMappingTableLoad(<MappingTableData>
                                        JSON.parse(params.mappingTableData));
                 }, 0);
             }
             else
             {
-                TurbulenzEngine.setTimeout(function () {
+                turbulenzEngine.setTimeout(function () {
                     mappingTable.errorCallbackFn(
                         "!! mappingtable params contain no url or data");
                 }, 0);
@@ -224,3 +231,4 @@ class MappingTable
         return mappingTable;
     }
 }
+

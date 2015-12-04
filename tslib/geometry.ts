@@ -1,13 +1,21 @@
 // Copyright (c) 2010-2014 Turbulenz Limited
+import u = require('./utilities.ts');
+import scenenodei = require('../tslib/scenenode.ts');
+import jsenginei = require('../jslib-modular/jsengine.d.ts');
+import indexbuffermanageri = require('../tslib/indexbuffermanager.ts');
+import vertexbuffermanageri = require('../tslib/vertexbuffermanager.ts');
+import materiali = require('../tslib/material.ts');
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,TextureParameters,VertexBufferParameters,IndexBufferParameters,RenderTargetParameters,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../tslib/turbulenz.d.ts';
+import {turbulenzEngine} from '../tslib/turbulenz.d.ts';
 
-/*global TurbulenzEngine: false*/
+/*global turbulenzEngine: false*/
 /*global Reference: false*/
 
 //
 // Surface
 //
 // TODO: Is there an inheritance relationship with Geometry?
-interface Surface
+export interface Surface
 {
     first        : number;
     numVertices  : number;
@@ -23,7 +31,7 @@ interface Surface
 //
 // Geometry
 //
-class Geometry
+export class Geometry
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -33,7 +41,7 @@ class Geometry
     type                   : string;
     center                 : any; // v3?
     halfExtents            : any; // v3
-    reference              : Reference;
+    reference              : u.Reference;
 
     primitive              : number;
     semantics              : Semantics;
@@ -44,7 +52,7 @@ class Geometry
     indexBuffer            : IndexBuffer;
     numIndices             : number;
 
-    skeleton               : Skeleton;
+    skeleton               : jsenginei.Skeleton;
     surfaces               : any; // { [name: string]: Surface; };
 
     vertexData             : any;
@@ -52,16 +60,16 @@ class Geometry
     first                  : number;
 
     vertexBufferAllocation : any;
-    vertexBufferManager    : VertexBufferManager;
+    vertexBufferManager    : vertexbuffermanageri.VertexBufferManager;
     indexBufferAllocation  : any;
-    indexBufferManager     : IndexBufferManager;
+    indexBufferManager     : indexbuffermanageri.IndexBufferManager;
 
     constructor()
     {
         this.semantics = null;
         this.vertexBuffer = null;
         this.vertexOffset = 0;
-        this.reference = Reference.create(this);
+        this.reference = u.Reference.create(this);
         this.surfaces = {};
         this.type = "rigid";
         return this;
@@ -101,7 +109,7 @@ class Geometry
 //
 // GeometryInstance
 //
-class GeometryInstance implements Renderable
+export class GeometryInstance implements Renderable
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -112,13 +120,13 @@ class GeometryInstance implements Renderable
     // Renderable
     geometry            : Geometry;
     geometryType        : string;
-    node                : SceneNode;
+    node                : scenenodei.SceneNode;
 
     renderUpdate        : any;
     rendererInfo        : any;
     distance            : number;
     drawParameters      : DrawParameters[];
-    sharedMaterial      : Material;
+    sharedMaterial      : materiali.Material;
 
     // GeometryInstance
     // TODO: Potentially some of these belong on Renderable too
@@ -191,7 +199,7 @@ class GeometryInstance implements Renderable
     //
     // getNode
     //
-    getNode(): SceneNode
+    getNode(): scenenodei.SceneNode
     {
         return this.node;
     }
@@ -213,7 +221,7 @@ class GeometryInstance implements Renderable
     //
     // getMaterial
     //
-    getMaterial() : Material
+    getMaterial() : materiali.Material
     {
         return this.sharedMaterial;
     }
@@ -392,10 +400,10 @@ class GeometryInstance implements Renderable
     // Constructor function
     //
     static create(geometry: Geometry, surface: Surface,
-                  sharedMaterial: Material) : GeometryInstance
+                  sharedMaterial: materiali.Material) : GeometryInstance
     {
         var instance = new GeometryInstance();
-        var graphicsDevice = TurbulenzEngine.getGraphicsDevice(); //Maybe null when running on the server.
+        var graphicsDevice = turbulenzEngine.getGraphicsDevice(); //Maybe null when running on the server.
 
         instance.geometry = geometry;
         instance.geometry.reference.add();

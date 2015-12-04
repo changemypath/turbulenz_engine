@@ -1,4 +1,5 @@
 // Copyright (c) 2012-2015 Turbulenz Limited
+import {Log} from '../../turbulenz/libs/log.ts';
 
 // Complains in various parts about use of (/*NAME*/value) constants.
 

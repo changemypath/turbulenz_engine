@@ -1,14 +1,20 @@
 // Copyright (c) 2011-2012 Turbulenz Limited
+// import {Nagivator} from '../base.d.ts';
+import {TouchEvent,Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine,VertexBufferParameters,PhysicsShape} from '../turbulenz.d.ts';
+import {debug} from '../debug.ts';
+import {WebGLTouchEvent} from './touchevent.ts';
+import {Touch} from './touch.ts';
+import {turbulenzEngine} from '../turbulenz.d.ts';
 
 /*global window*/
 /*global Touch: false*/
 /*global TouchEvent: false*/
-/*global TurbulenzEngine: false*/
+/*global turbulenzEngine: false*/
 
 //
 // WebGLInputDevice
 //
-class WebGLInputDevice implements InputDevice
+export class WebGLInputDevice implements InputDevice
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -306,7 +312,7 @@ class WebGLInputDevice implements InputDevice
     sendEventToHandlersASync(handlers, a0?, a1?, a2?, a3?, a4?, a5?)
     {
         var sendEvent = WebGLInputDevice.prototype.sendEventToHandlers;
-        TurbulenzEngine.setTimeout(function callSendEventToHandlersFn() {
+        turbulenzEngine.setTimeout(function callSendEventToHandlersFn() {
             sendEvent(handlers, a0, a1, a2, a3, a4, a5);
         }, 0);
     }
@@ -316,10 +322,10 @@ class WebGLInputDevice implements InputDevice
         var magnitude;
         var normalizedMagnitude;
 
-        var gamepads = (navigator.gamepads ||
-                        navigator.webkitGamepads ||
+        var gamepads = (navigator["gamepads"] ||
+                        navigator["webkitGamepads"] ||
                         (navigator.getGamepads && navigator.getGamepads()) ||
-                        (navigator.webkitGetGamepads && navigator.webkitGetGamepads()));
+                        (navigator["webkitGetGamepads"] && navigator["webkitGetGamepads"]()));
 
         if (gamepads)
         {
@@ -572,7 +578,7 @@ class WebGLInputDevice implements InputDevice
 
         if (event.wheelDelta)
         {
-            if (window.opera)
+            if (window["opera"])
             {
                 scrollDelta = event.wheelDelta < 0 ? 1 : -1;
             }
@@ -787,24 +793,24 @@ class WebGLInputDevice implements InputDevice
             /* tslint:disable:no-string-literal */
             if (document.fullscreenElement ||
                 document.webkitFullscreenElement ||
-                document.mozFullScreenElement ||
-                document.msFullscreenElement)
+                document["mozFullScreenElement"] ||
+                document["msFullscreenElement"])
             {
                 if (document.webkitCancelFullScreen)
                 {
                     document.webkitCancelFullScreen();
                 }
-                else if (document.cancelFullScreen)
+                else if (document["cancelFullScreen"])
                 {
-                    document.cancelFullScreen();
+                    document["cancelFullScreen"]();
                 }
                 else if (document['mozCancelFullScreen'])
                 {
                     document['mozCancelFullScreen']();
                 }
-                else if (document.msExitFullscreen)
+                else if (document["msExitFullscreen"])
                 {
-                    document.msExitFullscreen();
+                    document["msExitFullscreen"]();
                 }
                 else if (document.exitFullscreen)
                 {
@@ -1074,7 +1080,7 @@ class WebGLInputDevice implements InputDevice
                         positionY     : positionY,
                         radiusX       : 1,
                         radiusY       : 1,
-                        rotationAngle : 0
+                        rotationAngle : 0,
                     };
 
                     this.touches[touchId] = touch;
@@ -1317,8 +1323,8 @@ class WebGLInputDevice implements InputDevice
         {
             if (document.fullscreenElement ||
                 document.webkitFullscreenElement ||
-                document.mozFullScreenElement ||
-                document.msFullscreenElement)
+                document["mozFullScreenElement"] ||
+                document["msFullscreenElement"])
             {
                 this.ignoreNextMouseMoves = 2; // Some browsers will send 2 mouse events with a massive delta
                 this.requestBrowserLock();
@@ -1813,14 +1819,14 @@ class WebGLInputDevice implements InputDevice
         if (requestPointerLock)
         {
             var exitPointerLock = (document.exitPointerLock    ||
-                                   document.mozExitPointerLock ||
-                                   document.webkitExitPointerLock);
+                                   document["mozExitPointerLock"] ||
+                                   document["webkitExitPointerLock"]);
 
             id.onPointerLockChanged = function onPointerLockChangedFn(/* event */)
             {
                 var pointerLockElement = (document.pointerLockElement    ||
-                                          document.mozPointerLockElement ||
-                                          document.webkitPointerLockElement);
+                                          document["mozPointerLockElement"] ||
+                                          document["webkitPointerLockElement"]);
                 if (pointerLockElement !== id.canvas)
                 {
                     id.unlockMouse();
@@ -1882,8 +1888,8 @@ class WebGLInputDevice implements InputDevice
             id.requestBrowserLock = function requestBrowserLockFn()
             {
                 var pointerLockElement = (document.pointerLockElement    ||
-                                          document.mozPointerLockElement ||
-                                          document.webkitPointerLockElement);
+                                          document["mozPointerLockElement"] ||
+                                          document["webkitPointerLockElement"]);
                 if (pointerLockElement !== canvas)
                 {
                     this.setEventHandlersPointerLock();
@@ -1897,8 +1903,8 @@ class WebGLInputDevice implements InputDevice
                 this.setEventHandlersPointerUnlock();
 
                 var pointerLockElement = (document.pointerLockElement    ||
-                                          document.mozPointerLockElement ||
-                                          document.webkitPointerLockElement);
+                                          document["mozPointerLockElement"] ||
+                                          document["webkitPointerLockElement"]);
                 if (pointerLockElement === canvas)
                 {
                     exitPointerLock.call(document);
@@ -1907,7 +1913,7 @@ class WebGLInputDevice implements InputDevice
         }
         else
         {
-            var pointer = (navigator.pointer || navigator.webkitPointer);
+            var pointer = (navigator["pointer"] || navigator["webkitPointer"]);
             if (pointer)
             {
                 id.requestBrowserLock = function requestBrowserLockFn()
@@ -1945,7 +1951,7 @@ class WebGLInputDevice implements InputDevice
         id.setEventHandlersTouch();
 
         // Record the platforms so that we can enable workarounds, etc.
-        var sysInfo = TurbulenzEngine.getSystemInfo();
+        var sysInfo = turbulenzEngine.getSystemInfo();
         id.macosx = ("Darwin" === sysInfo.osName);
         id.webkit = (/WebKit/.test(navigator.userAgent));
 

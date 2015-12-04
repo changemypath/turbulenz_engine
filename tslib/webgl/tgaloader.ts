@@ -1,5 +1,11 @@
 // Copyright (c) 2011-2012 Turbulenz Limited
-/*global TurbulenzEngine*/
+
+import {WebGLGraphicsDevice} from './graphicsdevice';
+
+import {Shader,ShaderParameter,ShaderParameters,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,TextureParameters,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,SoundDeviceParameters,SoundParameters,SoundGlobalSource,SoundSource,SoundSourceParameters,SoundArchiveParameters,SoundEffect,SoundEffectParameters,SoundEffectSlot,SoundEffectSlotParameters,SoundFilter,SoundFilterParameters,SoundGlobalSourceParameters,TurbulenzEngine,VertexBufferParameters,PhysicsShape,Video,VideoParameters,RenderBufferParameters,RenderTargetParameters,IndexWriteIterator,IndexBufferParameters,VertexWriteIterator,Pass,ShaderParametersPass,GraphicsDeviceMetrics,OcclusionQuery,TimerQuery,TextureArchiveParams,GraphicsDeviceParameters} from '../turbulenz.d.ts';
+import {turbulenzEngine} from '../turbulenz.d.ts';
+
+/*global turbulenzEngine*/
 /*global Uint8Array*/
 /*global Uint16Array*/
 /*global window*/
@@ -9,7 +15,7 @@
 //
 // TGALoader
 //
-class TGALoader
+export class TGALoader
 {
     static version = 1;
 
@@ -580,13 +586,13 @@ class TGALoader
         {
             loader.src = src;
             var xhr;
-            if (window.XMLHttpRequest)
+            if (window["XMLHttpRequest"])
             {
-                xhr = new window.XMLHttpRequest();
+                xhr = new window["XMLHttpRequest"]();
             }
-            else if (window.ActiveXObject)
+            else if (window["ActiveXObject"])
             {
-                xhr = new window.ActiveXObject("Microsoft.XMLHTTP");
+                xhr = new window["ActiveXObject"]("Microsoft.XMLHTTP");
             }
             else
             {
@@ -600,7 +606,7 @@ class TGALoader
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4)
                 {
-                    if (!TurbulenzEngine || !TurbulenzEngine.isUnloading())
+                    if (!turbulenzEngine || !turbulenzEngine.isUnloading())
                     {
                         var xhrStatus = xhr.status;
                         var xhrStatusText = xhr.status !== 0 && xhr.statusText || 'No connection';

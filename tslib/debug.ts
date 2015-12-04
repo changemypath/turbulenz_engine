@@ -1,15 +1,18 @@
 // Copyright (c) 2012-2014 Turbulenz Limited
+import {Log} from '../../turbulenz/libs/log.ts';
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../tslib/turbulenz.d.ts';
+import {turbulenzEngine} from '../tslib/turbulenz.d.ts';
 
 // For V8 stack traces
 
-interface IError
+export interface IError
 {
     new (message?: string): Error;
     (message?: string): Error;
     prototype: Error;
     captureStackTrace?(a: any, b: any): any;
 }
-interface IErrorStackResult
+export interface IErrorStackResult
 {
     stack: string;
 }
@@ -32,7 +35,7 @@ interface IErrorStackResult
 //
 // etc...
 
-interface TurbulenzDebug
+export interface TurbulenzDebug
 {
     reportAssert(msg: string): void;
     abort(msg: string): void;
@@ -59,7 +62,7 @@ interface TurbulenzDebug
     isQuatPos(v): boolean;
 }
 
-var debug : TurbulenzDebug = {
+export var debug : TurbulenzDebug = {
 
     // Override this to change the behaviour when asserts are
     // triggered.  Default logs the message to the console and then
@@ -165,9 +168,9 @@ var debug : TurbulenzDebug = {
         // For now, math type errors do not generate a full assert
         // (hence we return true).  They just trigger the callback.
 
-        if (TurbulenzEngine.onperformancewarning)
+        if (turbulenzEngine.onperformancewarning)
         {
-            TurbulenzEngine.onperformancewarning(
+            turbulenzEngine.onperformancewarning(
                 "Object is not of type Float32Array.  If this message appears "
                 + "frequently, performance of your game may be affected.");
         }
@@ -225,3 +228,4 @@ var debug : TurbulenzDebug = {
         return (7 === v.length);
     }
 };
+

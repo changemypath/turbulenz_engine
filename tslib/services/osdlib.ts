@@ -1,6 +1,7 @@
 // Copyright (c) 2011 Turbulenz Limited
+// import {OSDDocument,OSD} from './osdlib';
 
-interface OSDDocument extends Document
+export interface OSDDocument extends Document
 {
     osdStartLoading();
     osdStartSaving();
@@ -8,7 +9,7 @@ interface OSDDocument extends Document
     osdStopSaving();
 };
 
-class OSD
+export class OSD
 {
     static version = 1;
 

@@ -1,22 +1,26 @@
 // Copyright (c) 2010-2014 Turbulenz Limited
+import basei = require('./base.d.ts');
+import observeri = require('./observer.ts');
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../tslib/turbulenz.d.ts';
+import {turbulenzEngine} from './turbulenz.d.ts';
 
 /*global window: false*/
 /*global Observer: false*/
-/*global TurbulenzEngine: false*/
+/*global turbulenzEngine: false*/
 /*exported MathDeviceConvert*/
 
-interface Utilities
+export interface Utilities
 {
     skipAsserts: boolean;
     assert: { (test: any, msg?: string): void; };
     beget: { (o: any): any; };
-    log: { (... arguments: any[]): void; };
+    log: { (... args: any[]): void; };
     nearestLowerPow2: { (num: number): number; };
     nearestUpperPow2: { (num: number): number; };
     ajax: { (params: any): void; };
     ajaxStatusCodes: any;
 };
-var Utilities : Utilities = {
+export var Utilities : Utilities = {
 
     //
     // assert
@@ -62,7 +66,7 @@ var Utilities : Utilities = {
         }
         if (typeof window !== 'undefined')
         {
-            consoleObj = window.console;
+            consoleObj = basei.window.console;
         }
 
         if (consoleObj)
@@ -138,14 +142,14 @@ var Utilities : Utilities = {
 
             if (method === "POST")
             {
-                str = TurbulenzEngine.encrypt(str);
+                str = turbulenzEngine.encrypt(str);
             }
 
             requestText += "data=" + encodeURIComponent(str) + "&";
 
             requestText += "gameSessionId=" + encodeURIComponent(data.gameSessionId);
 
-            signature = TurbulenzEngine.generateSignature(str);
+            signature = turbulenzEngine.generateSignature(str);
         }
         else if (data)
         {
@@ -173,7 +177,7 @@ var Utilities : Utilities = {
 
             if (xhr.getResponseHeader("Content-Type") !== "application/json; charset=utf-8")
             {
-                TurbulenzEngine.setTimeout(function () {
+                turbulenzEngine.setTimeout(function () {
                     callbackFn({ msg : 'HttpStatus ' + xhrStatus + ' ' + Utilities.ajaxStatusCodes[xhrStatus] },
                                xhrStatus);
                     callbackFn = null;
@@ -186,15 +190,15 @@ var Utilities : Utilities = {
                 if (encrypted)
                 {
                     var sig = xhr.getResponseHeader("X-TZ-Signature");
-                    var validSignature = TurbulenzEngine.verifySignature(xhrResponseText, sig);
+                    var validSignature = turbulenzEngine.verifySignature(xhrResponseText, sig);
                     xhrResponseText = null;
 
-                    TurbulenzEngine.setTimeout(function () {
+                    turbulenzEngine.setTimeout(function () {
                         var receivedUrl = response.requestUrl;
 
                         if (validSignature)
                         {
-                            if (!TurbulenzEngine.encryptionEnabled || receivedUrl === url)
+                            if (!turbulenzEngine.encryptionEnabled || receivedUrl === url)
                             {
                                 callbackFn(response, xhrStatus);
                                 callbackFn = null;
@@ -219,7 +223,7 @@ var Utilities : Utilities = {
                 {
                     xhrResponseText = null;
 
-                    TurbulenzEngine.setTimeout(function () {
+                    turbulenzEngine.setTimeout(function () {
                         callbackFn(response, xhrStatus);
                         callbackFn = null;
                     }, 0);
@@ -230,18 +234,18 @@ var Utilities : Utilities = {
         var httpRequest = function httpRequestFn(url, onload, callContext)
         {
             var xhr;
-            if (window.XMLHttpRequest)
+            if (basei.window.XMLHttpRequest)
             {
-                xhr = new window.XMLHttpRequest();
+                xhr = new basei.window.XMLHttpRequest();
                 // If the XMLHTTPRequest supports CORS credentials and the params asks for them enable it
                 if (withCredentials && "withCredentials" in xhr)
                 {
                     xhr.withCredentials = true;
                 }
             }
-            else if (window.ActiveXObject)
+            else if (basei.window.ActiveXObject)
             {
-                xhr = new window.ActiveXObject("Microsoft.XMLHTTP");
+                xhr = new basei.window.ActiveXObject("Microsoft.XMLHTTP");
             }
             else
             {
@@ -255,7 +259,7 @@ var Utilities : Utilities = {
 
             var httpCallback = function httpCallbackFn()
             {
-                if (xhr.readyState === 4 && TurbulenzEngine && !TurbulenzEngine.isUnloading()) /* 4 == complete */
+                if (xhr.readyState === 4 && turbulenzEngine && !turbulenzEngine.isUnloading()) /* 4 == complete */
                 {
                     var xhrResponseText = xhr.responseText;
                     var xhrStatus = xhr.status;
@@ -501,7 +505,7 @@ var MathDeviceConvert =
 //
 
 // Proxy reference class allowing weak reference to the object
-class Reference
+export class Reference
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -509,7 +513,7 @@ class Reference
 
     object            : any;
     referenceCount    : number;
-    destroyedObserver : Observer;
+    destroyedObserver : observeri.Observer;
 
     //
     // add
@@ -543,7 +547,7 @@ class Reference
     {
         if (!this.destroyedObserver)
         {
-            this.destroyedObserver = Observer.create();
+            this.destroyedObserver = observeri.Observer.create();
         }
         this.destroyedObserver.subscribe(observerFunction);
     }
@@ -588,7 +592,7 @@ var Profile =
             data = {name: name, calls: 0, duration: 0.0, min: Number.MAX_VALUE, max: 0.0, sumOfSquares: 0.0};
             this.profiles[name] = data;
         }
-        data.start = TurbulenzEngine.time;
+        data.start = turbulenzEngine.time;
     },
 
     //
@@ -596,7 +600,7 @@ var Profile =
     //
     stop: function profileStopFn(name)
     {
-        var end = TurbulenzEngine.time;
+        var end = turbulenzEngine.time;
         var data = this.profiles[name];
         if (data)
         {
@@ -716,7 +720,7 @@ var Profile =
 };
 
 //
-// Utilities to use with TurbulenzEngine.stopProfiling() object.
+// Utilities to use with turbulenzEngine.stopProfiling() object.
 //
 interface JSProfiling
 {

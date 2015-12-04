@@ -1,24 +1,27 @@
 // Copyright (c) 2010-2013 Turbulenz Limited
+import debugi = require('./debug.ts');
+var debug = debugi.debug;
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,TextureParameters,VertexBufferParameters,IndexBufferParameters,RenderTargetParameters,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../tslib/turbulenz.d.ts';
 
-interface IndexBufferPoolChunk
+export interface IndexBufferPoolChunk
 {
     baseIndex: number;
     length: number;
     nextChunk: IndexBufferPoolChunk;
 };
 
-interface IndexBufferPoolBucket
+export interface IndexBufferPoolBucket
 {
     headChunk: IndexBufferPoolChunk;
 };
 
-interface IndexBufferData
+export interface IndexBufferData
 {
     indexBuffer: IndexBuffer;
     bucket: IndexBufferPoolBucket[];
 };
 
-interface IndexBuffersPool
+export interface IndexBuffersPool
 {
     format: number;
     indexBufferData: IndexBufferData[];
@@ -28,7 +31,7 @@ interface IndexBuffersPool
 // IndexBufferManager
 //
 
-class IndexBufferManager
+export class IndexBufferManager
 {
     static version = 1;
 

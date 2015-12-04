@@ -1,5 +1,15 @@
 // Copyright (c) 2011-2014 Turbulenz Limited
-/*global TurbulenzEngine: false*/
+
+// import {WebGLSoundDeviceSoundCheckCall,WebGLSoundDeviceSourceMap,WebGLSound,WebGLSoundGlobalSource,WebGLSoundSource,WebGLSoundDeviceExtensions,WebGLAudioPoolItem,WebGLSoundDevice} from './sounddevice.ts';
+
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,SoundDeviceParameters,SoundParameters,SoundGlobalSource,SoundSource,SoundSourceParameters,SoundArchiveParameters,SoundEffect,SoundEffectParameters,SoundEffectSlot,SoundEffectSlotParameters,SoundFilter,SoundFilterParameters,SoundGlobalSourceParameters,TurbulenzEngine,VertexBufferParameters,PhysicsShape} from '../turbulenz.d.ts';
+import {debug} from '../debug';
+import {WebGLTurbulenzEngine} from './turbulenzengine';
+import {SoundTARLoader} from './soundtarloader.ts';
+import {VMath} from '../vmath';
+import {turbulenzEngine} from '../turbulenz.d.ts';
+
+/*global turbulenzEngine: false*/
 /*global SoundTARLoader: false*/
 /*global Audio: false*/
 /*global VMath: false*/
@@ -8,12 +18,13 @@
 
 "use strict";
 
-interface WebGLSoundDeviceSoundCheckCall
+
+export interface WebGLSoundDeviceSoundCheckCall
 {
     (): boolean;
 };
 
-interface WebGLSoundDeviceSourceMap
+export interface WebGLSoundDeviceSourceMap
 {
     [id: string] : boolean;
 };
@@ -21,7 +32,7 @@ interface WebGLSoundDeviceSourceMap
 //
 // WebGLSound
 //
-class WebGLSound implements Sound
+export class WebGLSound implements Sound
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -338,7 +349,7 @@ class WebGLSound implements Sound
 
                 // Mangle data into a data URI
                 this.url = url +
-                           (<WebGLTurbulenzEngine>TurbulenzEngine).base64Encode(
+                           (<WebGLTurbulenzEngine>turbulenzEngine).base64Encode(
                             dataArray);
             }
         }
@@ -426,13 +437,13 @@ class WebGLSound implements Sound
                 }
                 else
                 {
-                    if (window.XMLHttpRequest)
+                    if (window["XMLHttpRequest"])
                     {
-                        xhr = new window.XMLHttpRequest();
+                        xhr = new window["XMLHttpRequest"]();
                     }
-                    else if (window.ActiveXObject)
+                    else if (window["ActiveXObject"])
                     {
-                        xhr = new window.ActiveXObject("Microsoft.XMLHTTP");
+                        xhr = new window["ActiveXObject"]("Microsoft.XMLHTTP");
                     }
                     else
                     {
@@ -447,7 +458,7 @@ class WebGLSound implements Sound
                     {
                         if (xhr.readyState === 4)
                         {
-                            if (!TurbulenzEngine || !TurbulenzEngine.isUnloading())
+                            if (!turbulenzEngine || !turbulenzEngine.isUnloading())
                             {
                                 var xhrStatus = xhr.status;
                                 //var xhrStatusText = (xhrStatus !== 0 && xhr.statusText || 'No connection');
@@ -585,7 +596,7 @@ class WebGLSound implements Sound
                     xhr.onreadystatechange = function () {
                         if (xhr.readyState === 4)
                         {
-                            if (!TurbulenzEngine || !TurbulenzEngine.isUnloading())
+                            if (!turbulenzEngine || !turbulenzEngine.isUnloading())
                             {
                                 var xhrStatus = xhr.status;
                                 // Fix for loading from file
@@ -704,7 +715,7 @@ class WebGLSound implements Sound
 //
 // WebGLSoundGlobalSource
 //
-class WebGLSoundGlobalSource implements SoundGlobalSource
+export class WebGLSoundGlobalSource implements SoundGlobalSource
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -788,7 +799,7 @@ class WebGLSoundGlobalSource implements SoundGlobalSource
 
             if ((<WebGLSound>sound).data)
             {
-                audio.mozSetup(sound.channels, sound.frequency);
+                audio["mozSetup"](sound.channels, sound.frequency);
             }
 
             this.audio = audio;
@@ -1288,7 +1299,7 @@ class WebGLSoundGlobalSource implements SoundGlobalSource
 //
 // WebGLSoundSource
 //
-class WebGLSoundSource extends WebGLSoundGlobalSource implements SoundSource
+export class WebGLSoundSource extends WebGLSoundGlobalSource implements SoundSource
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -1541,7 +1552,7 @@ class WebGLSoundSource extends WebGLSoundGlobalSource implements SoundSource
     }
 }
 
-interface WebGLSoundDeviceExtensions
+export interface WebGLSoundDeviceExtensions
 {
     ogg: boolean;
     mp3: boolean;
@@ -1551,7 +1562,7 @@ interface WebGLSoundDeviceExtensions
     wav: boolean;
 }
 
-interface WebGLAudioPoolItem
+export interface WebGLAudioPoolItem
 {
     audio: HTMLAudioElement;
     mediaNode: any; // window.AudioContext.createMediaElementSource()
@@ -1560,7 +1571,7 @@ interface WebGLAudioPoolItem
 //
 // WebGLSoundDevice
 //
-class WebGLSoundDevice implements SoundDevice
+export class WebGLSoundDevice implements SoundDevice
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -1657,7 +1668,7 @@ class WebGLSoundDevice implements SoundDevice
         }
         else
         {
-            (<WebGLTurbulenzEngine>TurbulenzEngine).callOnError(
+            (<WebGLTurbulenzEngine>turbulenzEngine).callOnError(
                 'Missing archive loader required for ' + src);
             return false;
         }
@@ -1863,7 +1874,7 @@ class WebGLSoundDevice implements SoundDevice
         {
             var audio = new Audio();
             audio.preload = 'auto';
-            audio.autobuffer = true;
+            audio["autobuffer"] = true;
 
             var mediaNode = (this.audioContext ?
                              this.audioContext.createMediaElementSource(audio) :
@@ -1960,7 +1971,7 @@ class WebGLSoundDevice implements SoundDevice
         if (sd.deviceSpecifier !== "audioelement")
         {
             AudioContextConstructor =
-                (window.AudioContext || window.webkitAudioContext);
+                (window["AudioContext"] || window["webkitAudioContext"]);
         }
 
         var listener = null;
@@ -1973,7 +1984,7 @@ class WebGLSoundDevice implements SoundDevice
             }
             catch (error)
             {
-                (<WebGLTurbulenzEngine>TurbulenzEngine).callOnError(
+                (<WebGLTurbulenzEngine>turbulenzEngine).callOnError(
                     'Failed to create AudioContext:' + error);
                 return null;
             }
@@ -2330,7 +2341,7 @@ class WebGLSoundDevice implements SoundDevice
         }
         catch (error)
         {
-            (<WebGLTurbulenzEngine>TurbulenzEngine).callOnError(
+            (<WebGLTurbulenzEngine>turbulenzEngine).callOnError(
                 'Failed to create Audio:' + error);
             return null;
         }
@@ -2341,11 +2352,11 @@ class WebGLSoundDevice implements SoundDevice
         }
         else
         {
-            if (audio.mozSetup)
+            if (audio["mozSetup"])
             {
                 try
                 {
-                    audio.mozSetup(1, 22050);
+                    audio["mozSetup"](1, 22050);
                 }
                 catch (e)
                 {

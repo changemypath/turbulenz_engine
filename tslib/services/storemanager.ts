@@ -1,7 +1,16 @@
 // Copyright (c) 2011-2013 Turbulenz Limited
+import gamesession = require('./gamesession.ts');
+import turbulenzservices = require('./turbulenzservices.ts');
+import turbulenzbridge = require('./turbulenzbridge.ts');
+import sessiontoken = require('./sessiontoken.ts');
+import debug = require('../debug.ts');
+import requesthandleri = require('../requesthandler.ts');
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../../tslib/turbulenz.d.ts';
+import {Window,TurbulenzBridgeConfig,TurbulenzBridgeServiceRequestData,TurbulenzBridgeServiceRequest,TurbulenzBridgeServiceResponseData,TurbulenzBridgeServiceResponse,GameSessionCreateRequest,GameSessionCreateResponseMappingTable,GameSessionCreateResponse,GameSessionDestroyRequest,UserDataRequestBase,UserDataGetKeysRequest,userDataExistsRequest,userDataGetRequest,userDataSetRequest,userDataRemoveRequest,userDataRemoveAllRequest,BadgeDescription,BadgeDescriptionList,BadgeMetaResponse,BadgeAddProgressRequest,BadgeProgress,BadgeAddResponse,BadgeProgressList,BadgeReadResponse,Currency,BasketItem,BasketItemList,Basket,CalculatedBasketItem,CalculatedBasketItemList,CalculatedBasket,StoreItem,StoreItemList,StoreOfferingOutput,StoreOffering,StoreOfferingList,StoreOfferingPriceAPI,StoreOfferingAPIResponse,StoreResource,StoreResourceList,StoreMetaData,TransactionRequest,Transaction,TransactionPaymentParameters,TransactionPayment} from './servicedatatypes.d.ts';
+import {turbulenzEngine} from '../turbulenz.d.ts';
 
 /*global TurbulenzServices: false*/
-/*global TurbulenzEngine: false*/
+/*global turbulenzEngine: false*/
 /*global TurbulenzBridge: false*/
 /*global SessionToken: false*/
 /*global debug: false*/
@@ -9,42 +18,42 @@
 //
 // UserItem - A record of an Item owned by the user
 //
-interface UserItem
+export interface UserItem
 {
     amount: number;
 };
 
-interface UserItemList
+export interface UserItemList
 {
     [itemKey: string]: UserItem;
 };
 
 //
-interface StoreManagerErrorCB
+export interface StoreManagerErrorCB
 {
     (msg: string, status?: number, fn_called?: any, parameters_given?: any[]): void;
 };
 
 //
-interface StoreManagerMetaReceivedCB
+export interface StoreManagerMetaReceivedCB
 {
     (storeManager: StoreManager): void;
 };
 
 //
-interface StoreManagerUserItemsCB
+export interface StoreManagerUserItemsCB
 {
     (userItems: UserItemList): void;
 };
 
 //
-interface StoreManagerBasketUpdatedCB
+export interface StoreManagerBasketUpdatedCB
 {
     (): void;
 };
 
 //
-interface UpdateBasketCallbackList
+export interface UpdateBasketCallbackList
 {
     [token: string] : StoreManagerBasketUpdatedCB;
 };
@@ -52,18 +61,18 @@ interface UpdateBasketCallbackList
 //
 // StoreManager
 //
-class StoreManager
+export class StoreManager
 {
     static version = 1;
 
-    gameSession             : GameSession;
+    gameSession             : gamesession.GameSession;
     gameSessionId           : string;
     errorCallbackFn         : StoreManagerErrorCB;
-    service                 : ServiceRequester;
-    requestHandler          : RequestHandler;
-    basketUpdateRequestToken: SessionToken;
-    userItemsRequestToken   : SessionToken;
-    consumeRequestToken     : SessionToken;
+    service                 : turbulenzservices.ServiceRequester;
+    requestHandler          : requesthandleri.RequestHandler;
+    basketUpdateRequestToken: sessiontoken.SessionToken;
+    userItemsRequestToken   : sessiontoken.SessionToken;
+    consumeRequestToken     : sessiontoken.SessionToken;
     ready                   : boolean;
     currency                : string;
     offerings               : StoreOfferingList;
@@ -181,9 +190,9 @@ class StoreManager
             this.updateBasketCallbacks[token] = callback;
         }
         var that = this;
-        TurbulenzEngine.setTimeout(function yieldOnUpdate()
+        turbulenzEngine.setTimeout(function yieldOnUpdate()
             {
-                TurbulenzBridge.triggerBasketUpdate(JSON.stringify(<Basket>{
+                turbulenzbridge.TurbulenzBridge.triggerBasketUpdate(JSON.stringify(<Basket>{
                     basketItems: that.basket.items,
                     token: token
                 }));
@@ -321,7 +330,7 @@ class StoreManager
         }
         this.updateBasket(function showConfirmPurchaseBasketUpdate()
             {
-                TurbulenzBridge.triggerShowConfirmPurchase();
+                turbulenzbridge.TurbulenzBridge.triggerShowConfirmPurchase();
             });
         return true;
     }
@@ -340,7 +349,7 @@ class StoreManager
                     callbackFn(jsonResponse.data.consumed);
                 }
 
-                TurbulenzBridge.triggerUserStoreUpdate(JSON.stringify(that.userItems));
+                turbulenzbridge.TurbulenzBridge.triggerUserStoreUpdate(JSON.stringify(that.userItems));
             }
             else
             {
@@ -373,17 +382,17 @@ class StoreManager
             }, 'store.useritems-consume');
     }
 
-    static create(requestHandler: RequestHandler,
-                  gameSession: GameSession,
+    static create(requestHandler: requesthandleri.RequestHandler,
+                  gameSession: gamesession.GameSession,
                   storeMetaReceived?: StoreManagerMetaReceivedCB,
                   errorCallbackFn?: StoreManagerErrorCB): StoreManager
     {
-        if (!TurbulenzServices.available())
+        if (!turbulenzservices.TurbulenzServices.available())
         {
-            debug.log("storeManagerCreateFn: !! TurbulenzServices not available");
+            debug.debug.log("storeManagerCreateFn: !! turbulenzservices.TurbulenzServices not available");
 
             // Call error callback on a timeout to get the same behaviour as the ajax call
-            TurbulenzEngine.setTimeout(function () {
+            turbulenzEngine.setTimeout(function () {
                 if (errorCallbackFn)
                 {
                     errorCallbackFn('TurbulenzServices.createStoreManager ' +
@@ -397,13 +406,13 @@ class StoreManager
 
         storeManager.gameSession = gameSession;
         storeManager.gameSessionId = gameSession.gameSessionId;
-        storeManager.errorCallbackFn = errorCallbackFn || TurbulenzServices.defaultErrorCallback;
-        storeManager.service = TurbulenzServices.getService('store');
+        storeManager.errorCallbackFn = errorCallbackFn || turbulenzservices.TurbulenzServices.defaultErrorCallback;
+        storeManager.service = turbulenzservices.TurbulenzServices.getService('store');
         storeManager.requestHandler = requestHandler;
 
-        storeManager.userItemsRequestToken = SessionToken.create();
-        storeManager.basketUpdateRequestToken = SessionToken.create();
-        storeManager.consumeRequestToken = SessionToken.create();
+        storeManager.userItemsRequestToken = sessiontoken.SessionToken.create();
+        storeManager.basketUpdateRequestToken = sessiontoken.SessionToken.create();
+        storeManager.consumeRequestToken = sessiontoken.SessionToken.create();
 
         storeManager.ready = false;
 
@@ -457,8 +466,8 @@ class StoreManager
 
             checkMetaReceived();
         };
-        TurbulenzBridge.setOnBasketUpdate(onBasketUpdate);
-        TurbulenzBridge.triggerBasketUpdate();
+        turbulenzbridge.TurbulenzBridge.setOnBasketUpdate(onBasketUpdate);
+        turbulenzbridge.TurbulenzBridge.triggerBasketUpdate();
 
         var onStoreMeta = function onStoreMetaFn(jsonMeta: string) : void
         {
@@ -468,8 +477,8 @@ class StoreManager
             storeManager.resources = meta.resources;
             checkMetaReceived();
         };
-        TurbulenzBridge.setOnStoreMeta(onStoreMeta);
-        TurbulenzBridge.triggerFetchStoreMeta();
+        turbulenzbridge.TurbulenzBridge.setOnStoreMeta(onStoreMeta);
+        turbulenzbridge.TurbulenzBridge.triggerFetchStoreMeta();
 
         storeManager.onSitePurchaseConfirmed = null;
         function onSitePurchaseConfirmed() : void
@@ -483,7 +492,7 @@ class StoreManager
             }
             storeManager.requestUserItems(gotNewItems);
         };
-        TurbulenzBridge.setOnPurchaseConfirmed(onSitePurchaseConfirmed);
+        turbulenzbridge.TurbulenzBridge.setOnPurchaseConfirmed(onSitePurchaseConfirmed);
 
         storeManager.onSitePurchaseRejected = null;
         var onSitePurchaseRejected = function onSitePurchaseRejectedFn() : void
@@ -493,7 +502,7 @@ class StoreManager
                 storeManager.onSitePurchaseRejected();
             }
         };
-        TurbulenzBridge.setOnPurchaseRejected(onSitePurchaseRejected);
+        turbulenzbridge.TurbulenzBridge.setOnPurchaseRejected(onSitePurchaseRejected);
 
         return storeManager;
     }

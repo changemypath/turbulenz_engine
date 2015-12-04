@@ -1,16 +1,23 @@
 // Copyright (c) 2011-2014 Turbulenz Limited
+// import {WebGLPhysicsShapeRayTestResult,WebGLPhysicsShape,WebGLPhysicsConfig,webGLPhysicsClone,initShapeProperties,WebGLPhysicsPlaneShape,WebGLPhysicsCapsuleShape,WebGLPhysicsSphereShape,WebGLPhysicsBoxShape,WebGLPhysicsCylinderShape,WebGLPhysicsConeShape,WebGLPhysicsTriangleArray,WebGLPhysicsPrivateTriangleArray,WebGLPhysicsConvexHullHelpers,WebGLPhysicsTriangleMeshShape,WebGLPhysicsConvexHullShape,WebGLPhysicsPrivateBody,WebGLPhysicsCollisionObject,WebGLPhysicsContactCallbacks,WebGLPhysicsRigidBody,WebGLPhysicsConstraint,WebGLPhysicsPoint2PointConstraint,WebGLPhysicsPrivatePoint2PointConstraint,WebGLPhysicsCharacter,WebGLPhysicsPrivateCharacter,WebGLGJKContactSolver,WebGLContactEPA,WebGLPhysicsPublicContact,WebGLPhysicsArbiter,WebGLPhysicsIsland,WebGLPhysicsTriangleShape,WebGLPhysicsTOIEvent,WebGLPhysicsWorld,WebGLPhysicsNarrowCache,WebGLPrivatePhysicsWorld,WebGLPhysicsDevice} from './webgl/physicsdevice.ts';
+
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine,VertexBufferParameters,PhysicsShape,PhysicsTriangleArray,PhysicsConstraint,RayTestParameters,RayHit,ConvexSweepTestParameters,PhysicsHingeConstraint,PhysicsConeTwistConstraint,Physics6DOFConstraint,PhysicsSliderConstraint} from '../../tslib/turbulenz.d.ts';
+import {VMath} from '../vmath.ts';
+import {AABBTree,AABBTreeNode,AABBTreeRay,AABBTreeRayTestResult} from '../aabbtree.ts';
+import {turbulenzEngine} from '../turbulenz.d.ts';
+
 /*global Float32Array: false*/
 /*global Uint16Array: false*/
 /*global Uint32Array: false*/
 /*global VMath: false*/
 /*global AABBTree: false*/
-/*global TurbulenzEngine: false*/
+/*global turbulenzEngine: false*/
 
 "use strict";
 
 // TODO: is this related to RayHit?
 
-interface WebGLPhysicsShapeRayTestResult
+export interface WebGLPhysicsShapeRayTestResult
 {
     factor    : number;
     hitPoint  : any; // v3
@@ -22,7 +29,7 @@ interface WebGLPhysicsShapeRayTestResult
 //
 // WebGLPhysicsShape
 //
-class WebGLPhysicsShape implements PhysicsShape
+export class WebGLPhysicsShape implements PhysicsShape
 {
     static version = 1;
 
@@ -47,7 +54,7 @@ class WebGLPhysicsShape implements PhysicsShape
 //
 // WebGLPhysicsConfig
 //
-var WebGLPhysicsConfig = {
+export var WebGLPhysicsConfig = {
     // (Contact physics)
     // Amount of slop permitted in contact penetration
     // And percentage of positional error to resolve
@@ -113,7 +120,7 @@ var WebGLPhysicsConfig = {
     COPLANAR_THRESHOLD : 1e-16
 };
 
-var webGLPhysicsClone = function webGLPhysicsCloneFn(dst, src)
+export var webGLPhysicsClone = function webGLPhysicsCloneFn(dst, src)
 {
     for (var p in src)
     {
@@ -152,7 +159,7 @@ var webGLPhysicsClone = function webGLPhysicsCloneFn(dst, src)
     return dst;
 }
 
-var initShapeProperties = function initShapePropertiesFn(s: WebGLPhysicsShape,
+export var initShapeProperties = function initShapePropertiesFn(s: WebGLPhysicsShape,
                                                          type: string,
                                                          nomargin?: boolean) : void
 {
@@ -213,7 +220,7 @@ var initShapeProperties = function initShapePropertiesFn(s: WebGLPhysicsShape,
 //
 // WebGLPhysicsPlaneShape
 //
-class WebGLPhysicsPlaneShape implements PhysicsShape
+export class WebGLPhysicsPlaneShape implements PhysicsShape
 {
     static version = 1;
 
@@ -328,7 +335,7 @@ WebGLPhysicsPlaneShape.prototype.type = "PLANE";
 //
 // WebGL Physics Capsule Shape
 //
-class WebGLPhysicsCapsuleShape implements PhysicsShape
+export class WebGLPhysicsCapsuleShape implements PhysicsShape
 {
     static version = 1;
 
@@ -556,7 +563,7 @@ WebGLPhysicsShape.prototype.type = "CAPSULE";
 //
 // WebGL Physics Sphere Shape
 //
-class WebGLPhysicsSphereShape implements PhysicsShape
+export class WebGLPhysicsSphereShape implements PhysicsShape
 {
     static version = 1;
 
@@ -684,7 +691,7 @@ WebGLPhysicsSphereShape.prototype.type = "SPHERE";
 //
 // WebGL Physics Box Shape
 //
-class WebGLPhysicsBoxShape implements PhysicsShape
+export class WebGLPhysicsBoxShape implements PhysicsShape
 {
     static version = 1;
 
@@ -867,7 +874,7 @@ WebGLPhysicsBoxShape.prototype.type = "BOX";
 //
 // WebGL Physics Cylinder Shape
 //
-class WebGLPhysicsCylinderShape implements PhysicsShape
+export class WebGLPhysicsCylinderShape implements PhysicsShape
 {
     static version = 1;
 
@@ -1054,7 +1061,7 @@ WebGLPhysicsCylinderShape.prototype.type = "CYLINDER";
 //
 // WebGLPhysicsConeShape
 //
-class WebGLPhysicsConeShape implements PhysicsShape
+export class WebGLPhysicsConeShape implements PhysicsShape
 {
     static version = 1;
 
@@ -1255,7 +1262,7 @@ WebGLPhysicsConeShape.prototype.type = "CONE";
 // WebGLPhysicsTriangleArray
 //
 
-class WebGLPhysicsTriangleArray implements PhysicsTriangleArray
+export class WebGLPhysicsTriangleArray implements PhysicsTriangleArray
 {
     static version = 1;
 
@@ -1467,7 +1474,7 @@ class WebGLPhysicsTriangleArray implements PhysicsTriangleArray
     }
 }
 
-class WebGLPhysicsPrivateTriangleArray
+export class WebGLPhysicsPrivateTriangleArray
 {
     static version = 1;
 
@@ -1622,7 +1629,7 @@ WebGLPhysicsPrivateTriangleArray.prototype.TRIANGLE_SIZE = 17;
 // WebGL Physics Convex Hull helpers.
 // (Mostly mirrored with turbulenz/tools/mesh.py)
 //
-var WebGLPhysicsConvexHullHelpers = {
+export var WebGLPhysicsConvexHullHelpers = {
     isPlanar : function isPlanarFn(points)
     {
         // tolerance for distance from plane for a point
@@ -2115,7 +2122,7 @@ var WebGLPhysicsConvexHullHelpers = {
 //
 // WebGLPhysicsTriangleMeshShape
 //
-class WebGLPhysicsTriangleMeshShape implements PhysicsShape
+export class WebGLPhysicsTriangleMeshShape implements PhysicsShape
 {
     static version = 1;
 
@@ -2196,7 +2203,7 @@ WebGLPhysicsTriangleMeshShape.prototype.type = "TRIANGLE_MESH";
 //
 // WebGL Physics Convex Hull Shape
 //
-class WebGLPhysicsConvexHullShape implements PhysicsShape
+export class WebGLPhysicsConvexHullShape implements PhysicsShape
 {
     static version = 1;
 
@@ -2527,7 +2534,7 @@ WebGLPhysicsConvexHullShape.prototype.type = "CONVEX_HULL";
 //
 // WebGLPhysicsPrivateBody
 //
-class WebGLPhysicsPrivateBody
+export class WebGLPhysicsPrivateBody
 {
     static version = 1;
 
@@ -3095,7 +3102,7 @@ class WebGLPhysicsPrivateBody
 //
 // WebGL Physics Collision Object
 //
-class WebGLPhysicsCollisionObject implements PhysicsCollisionObject
+export class WebGLPhysicsCollisionObject implements PhysicsCollisionObject
 {
     static version = 1;
 
@@ -3311,7 +3318,7 @@ class WebGLPhysicsCollisionObject implements PhysicsCollisionObject
     }
 }
 
-class WebGLPhysicsContactCallbacks
+export class WebGLPhysicsContactCallbacks
 {
     mask     : number;
     added    : boolean;
@@ -3356,7 +3363,7 @@ class WebGLPhysicsContactCallbacks
 
 // TODO: inherit from WebGLPhysicsCollisionObject
 
-class WebGLPhysicsRigidBody implements PhysicsRigidBody
+export class WebGLPhysicsRigidBody implements PhysicsRigidBody
 {
     static version = 1;
 
@@ -3682,7 +3689,7 @@ class WebGLPhysicsRigidBody implements PhysicsRigidBody
 //
 // WebGLPhysicsConstraint
 //
-class WebGLPhysicsConstraint implements PhysicsConstraint
+export class WebGLPhysicsConstraint implements PhysicsConstraint
 {
     static version = 1;
 
@@ -3794,7 +3801,7 @@ var initConstraintProperties = function initConstraintPropertiesFn(c, params)
 //
 // WebGLPhysicsPoint2Point Constraint
 //
-class WebGLPhysicsPoint2PointConstraint implements PhysicsPoint2PointConstraint
+export class WebGLPhysicsPoint2PointConstraint implements PhysicsPoint2PointConstraint
 {
     static version = 1;
     type : string;  // prototype
@@ -3923,7 +3930,7 @@ class WebGLPhysicsPoint2PointConstraint implements PhysicsPoint2PointConstraint
 
 WebGLPhysicsPoint2PointConstraint.prototype.type = "POINT2POINT";
 
-class WebGLPhysicsPrivatePoint2PointConstraint
+export class WebGLPhysicsPrivatePoint2PointConstraint
 {
 
     bodyA: WebGLPhysicsCollisionObject;
@@ -4220,7 +4227,7 @@ class WebGLPhysicsPrivatePoint2PointConstraint
 //
 // WebGLPhysicsCharacter
 //
-class WebGLPhysicsCharacter implements PhysicsCharacter
+export class WebGLPhysicsCharacter implements PhysicsCharacter
 {
     static version = 1;
 
@@ -4499,7 +4506,7 @@ class WebGLPhysicsCharacter implements PhysicsCharacter
     }
 }
 
-class WebGLPhysicsPrivateCharacter
+export class WebGLPhysicsPrivateCharacter
 {
     static version = 1;
 
@@ -4537,7 +4544,7 @@ class WebGLPhysicsPrivateCharacter
 //
 // WebGL GJK Contact Solver
 //
-class WebGLGJKContactSolver
+export class WebGLGJKContactSolver
 {
     static version = 1;
 
@@ -5334,7 +5341,7 @@ class WebGLGJKContactSolver
 //
 // WebGLContactEPA
 //
-class WebGLContactEPA
+export class WebGLContactEPA
 {
     static version = 1;
 
@@ -5931,7 +5938,7 @@ WebGLContactEPA.prototype.MAX_FACES = 128;
 //
 // WebGLPhysicsPublicContact
 //
-class WebGLPhysicsPublicContact
+export class WebGLPhysicsPublicContact
 {
     localPointOnA  : any;  // v3 - getter
     localPointOnB  : any;  // v3 - getter
@@ -6058,11 +6065,11 @@ class WebGLPhysicsPublicContact
 // Contacts are thus instead allocated an deallocated with no
 // create method.
 //
-interface WebGLPhysicsContact extends Float32Array
+export interface WebGLPhysicsContact extends Float32Array
 {
 }
 
-var WebGLPhysicsContact =
+export var WebGLPhysicsContact =
 {
     contactPool: <WebGLPhysicsContact[]>[],
     contactPoolSize: 0,
@@ -6114,7 +6121,7 @@ var WebGLPhysicsContact =
 //
 // WebGLPhysicsArbiter
 //
-class WebGLPhysicsArbiter
+export class WebGLPhysicsArbiter
 {
     static version = 1;
 
@@ -7175,7 +7182,7 @@ class WebGLPhysicsArbiter
 //
 // WebGLPhysicsIsland
 //
-class WebGLPhysicsIsland
+export class WebGLPhysicsIsland
 {
     static version = 1;
 
@@ -7244,7 +7251,7 @@ class WebGLPhysicsIsland
 //
 // WebGLPhysicsTriangleShape
 //
-class WebGLPhysicsTriangleShape
+export class WebGLPhysicsTriangleShape
 {
     static version = 1;
 
@@ -7357,7 +7364,7 @@ WebGLPhysicsTriangleShape.prototype.type = "TRIANGLE_MESH_TRIANGLE";
 //
 // WebGLPhysicsTOIEvent
 //
-class WebGLPhysicsTOIEvent
+export class WebGLPhysicsTOIEvent
 {
     static version = 1;
 
@@ -7468,7 +7475,7 @@ class WebGLPhysicsTOIEvent
 //
 // WebGLPhysicsWorld
 //
-class WebGLPhysicsWorld implements PhysicsWorld
+export class WebGLPhysicsWorld implements PhysicsWorld
 {
     static version = 1;
 
@@ -7675,7 +7682,7 @@ class WebGLPhysicsWorld implements PhysicsWorld
     }
 }
 
-interface WebGLPhysicsNarrowCache
+export interface WebGLPhysicsNarrowCache
 {
     axis     : any; // v3
     shapeA   : any; // TODO: what is this
@@ -7684,7 +7691,7 @@ interface WebGLPhysicsNarrowCache
     closestB : any; // v3
 }
 
-class WebGLPrivatePhysicsWorld
+export class WebGLPrivatePhysicsWorld
 {
     static version = 1;
 
@@ -8959,12 +8966,12 @@ class WebGLPrivatePhysicsWorld
         var prevTime = this.prevTimeStamp;
         if (prevTime === undefined)
         {
-            this.prevTimeStamp = TurbulenzEngine.getTime() * 0.001;
+            this.prevTimeStamp = turbulenzEngine.getTime() * 0.001;
             return;
         }
 
         // Compute number of sub-steps needed.
-        var curTime = TurbulenzEngine.getTime() * 0.001;
+        var curTime = turbulenzEngine.getTime() * 0.001;
         var timeDelta = (curTime - prevTime);
 
         var numSteps, timeStep;
@@ -9091,7 +9098,7 @@ class WebGLPrivatePhysicsWorld
 
             // ####################################################################
 
-            preTime = TurbulenzEngine.getTime() * 0.001;
+            preTime = turbulenzEngine.getTime() * 0.001;
 
             // Prepare broadphase
             staticMap.finalize();
@@ -9205,19 +9212,19 @@ class WebGLPrivatePhysicsWorld
                     }
                 }
             }
-            performance.discrete += (TurbulenzEngine.getTime() * 0.001 - preTime);
+            performance.discrete += (turbulenzEngine.getTime() * 0.001 - preTime);
 
             // ####################################################################
             // Compute islands and perform sleeping.
 
-            preTime = TurbulenzEngine.getTime() * 0.001;
+            preTime = turbulenzEngine.getTime() * 0.001;
             this.computeSleeping(timeStep);
-            performance.sleepComputation += (TurbulenzEngine.getTime() * 0.001 - preTime);
+            performance.sleepComputation += (turbulenzEngine.getTime() * 0.001 - preTime);
 
             // ####################################################################
 
             // Prestep arbiters
-            preTime = TurbulenzEngine.getTime() * 0.001;
+            preTime = turbulenzEngine.getTime() * 0.001;
             i = 0;
             var arb;
             while (i < arbiters.length)
@@ -9264,20 +9271,20 @@ class WebGLPrivatePhysicsWorld
 
                 i += 1;
             }
-            performance.prestepContacts += (TurbulenzEngine.getTime() * 0.001 - preTime);
+            performance.prestepContacts += (turbulenzEngine.getTime() * 0.001 - preTime);
 
-            preTime = TurbulenzEngine.getTime() * 0.001;
+            preTime = turbulenzEngine.getTime() * 0.001;
             // Prestep constraints
             limit = constraints.length;
             for (i = 0; i < limit; i += 1)
             {
                 constraints[i].preStep(timeStepRatio, timeStep);
             }
-            performance.prestepConstraints += (TurbulenzEngine.getTime() * 0.001 - preTime);
+            performance.prestepConstraints += (turbulenzEngine.getTime() * 0.001 - preTime);
 
             // ####################################################################
 
-            preTime = TurbulenzEngine.getTime() * 0.001;
+            preTime = turbulenzEngine.getTime() * 0.001;
             // Integrate velocities, apply gravity
             limit = rigidBodies.length;
             for (i = 0; i < limit; i += 1)
@@ -9286,31 +9293,31 @@ class WebGLPrivatePhysicsWorld
                 body.integrateVelocity(gravity, timeStep);
             }
 
-            performance.integrateVelocities += (TurbulenzEngine.getTime() * 0.001 - preTime);
+            performance.integrateVelocities += (turbulenzEngine.getTime() * 0.001 - preTime);
 
             // ####################################################################
 
-            preTime = TurbulenzEngine.getTime() * 0.001;
+            preTime = turbulenzEngine.getTime() * 0.001;
             // Warmstart arbiters
             limit = arbiters.length;
             for (i = 0; i < limit; i += 1)
             {
                 arbiters[i].applyCachedImpulses();
             }
-            performance.warmstartContacts += (TurbulenzEngine.getTime() * 0.001 - preTime);
+            performance.warmstartContacts += (turbulenzEngine.getTime() * 0.001 - preTime);
 
-            preTime = TurbulenzEngine.getTime() * 0.001;
+            preTime = turbulenzEngine.getTime() * 0.001;
             // Warmstart constraints
             limit = constraints.length;
             for (i = 0; i < limit; i += 1)
             {
                 constraints[i].applyCachedImpulses();
             }
-            performance.warmstartConstraints += (TurbulenzEngine.getTime() * 0.001 - preTime);
+            performance.warmstartConstraints += (turbulenzEngine.getTime() * 0.001 - preTime);
 
             // ####################################################################
 
-            preTime = TurbulenzEngine.getTime() * 0.001;
+            preTime = turbulenzEngine.getTime() * 0.001;
             // Physics iterations
             var numIterations = 10; //TODO: make configurable.
             for (i = 0; i < numIterations; i += 1)
@@ -9338,7 +9345,7 @@ class WebGLPrivatePhysicsWorld
                 }
             }
 
-            performance.physicsIterations += (TurbulenzEngine.getTime() * 0.001 - preTime);
+            performance.physicsIterations += (turbulenzEngine.getTime() * 0.001 - preTime);
 
             // ####################################################################
 
@@ -9348,7 +9355,7 @@ class WebGLPrivatePhysicsWorld
             var unfrozen = this.persistantObjectsList2;
             var numUnfrozen = 0;
 
-            preTime = TurbulenzEngine.getTime() * 0.001;
+            preTime = turbulenzEngine.getTime() * 0.001;
             limit = rigidBodies.length;
             var radius;
 
@@ -9419,11 +9426,11 @@ class WebGLPrivatePhysicsWorld
                 dynamicMap.update(body, extents);
             }
 
-            performance.integratePositions += (TurbulenzEngine.getTime() * 0.001 - preTime);
+            performance.integratePositions += (turbulenzEngine.getTime() * 0.001 - preTime);
 
             // ####################################################################
 
-            preTime = TurbulenzEngine.getTime() * 0.001;
+            preTime = turbulenzEngine.getTime() * 0.001;
 
             // We must finalize the broadphase once more.
             // Any objects that have gone to sleep (or been woken up) will have effected
@@ -9724,7 +9731,7 @@ class WebGLPrivatePhysicsWorld
                 }
             }
 
-            performance.continuous += (TurbulenzEngine.getTime() * 0.001 - preTime);
+            performance.continuous += (turbulenzEngine.getTime() * 0.001 - preTime);
         }
 
         // Ensure kinematic bodies are moved 'EXACTLY' to their set transform.
@@ -10785,7 +10792,7 @@ class WebGLPrivatePhysicsWorld
 //
 // WebGL Physics Device
 //
-class WebGLPhysicsDevice implements PhysicsDevice
+export class WebGLPhysicsDevice implements PhysicsDevice
 {
     static version     = 1;
 

@@ -1,10 +1,13 @@
 // Copyright (c) 2013-2014 Turbulenz Limited
+import {Touch} from './webgl/touch.ts';
+
+import {Log} from '../../turbulenz/libs/log.ts';
 
 // -----------------------------------------------------------------------------
 // MathDevice
 // -----------------------------------------------------------------------------
 
-interface MathDevice
+export interface MathDevice
 {
     version : number;
     // Default precision for equality comparations
@@ -243,6 +246,7 @@ interface MathDevice
     m43TransformVector(m, v, dst?);
     m43TransformPoint(m, v, dst?);
     m43Mul(a, b, dst?);
+    m43MulM33(a, b, dst?);
     m43MulM44(a, b, dst?);
     m43Transpose(m, dst?);
     m43MulTranspose(a, b, dst?);
@@ -325,13 +329,13 @@ interface MathDevice
 // GraphicsDevice
 // -----------------------------------------------------------------------------
 
-interface Pass
+export interface Pass
 {
     name: string;
     parameters: any;
 }
 
-interface Technique
+export interface Technique
 {
     id: number;
     initialized: boolean;
@@ -345,7 +349,7 @@ interface Technique
     device: GraphicsDevice;
 }
 
-interface ShaderParameter
+export interface ShaderParameter
 {
     name    : string;
     type    : string;
@@ -353,7 +357,7 @@ interface ShaderParameter
     columns : number;
 }
 
-interface ShaderParametersSampler
+export interface ShaderParametersSampler
 {
     MinFilter?: number;
     MagFilter?: number;
@@ -361,14 +365,14 @@ interface ShaderParametersSampler
     WrapT?: number;
 }
 
-interface ShaderParametersParameter
+export interface ShaderParametersParameter
 {
     type: string;
     rows?: number;
     columns?: number;
 }
 
-interface ShaderParametersPass
+export interface ShaderParametersPass
 {
     name?: string;
     parameters: string[];
@@ -377,13 +381,13 @@ interface ShaderParametersPass
     programs: string[];
 }
 
-interface ShaderParametersProgram
+export interface ShaderParametersProgram
 {
     type: string;
     code: string;
 }
 
-interface ShaderParameters
+export interface ShaderParameters
 {
     version: number;
     name: string;
@@ -393,7 +397,7 @@ interface ShaderParameters
     programs: { [programName: string]: ShaderParametersProgram; };
 }
 
-interface Shader
+export interface Shader
 {
     id             : number;
     name           : string;
@@ -408,42 +412,42 @@ interface Shader
     destroy();
 }
 
-interface TechniqueParameters
+export interface TechniqueParameters
 {
     [paramName: string]: any;
 }
 
-interface TechniqueParameterBufferParameters
+export interface TechniqueParameterBufferParameters
 {
     numFloats  : number;
     dynamic?   : boolean;
 }
 
-interface ParameterWriteIterator
+export interface ParameterWriteIterator
 {
     (... data: any[]): void;
     // write(... data: any[]): void;
 }
 
-interface TechniqueParameterBuffer extends Float32Array
+export interface TechniqueParameterBuffer extends Float32Array
 {
     numFloats: number;
     dynamic: boolean;
     data: number[];
 
-    map(offset?: number, numValues?: number): ParameterWriteIterator;
-    unmap(writer: ParameterWriteIterator): void;
+//    map(offset: number, numFloats: number): ParameterWriteIterator;
+//    unmap(writer: ParameterWriteIterator): void;
     setData(data: any, offset?: number, numValues?: number): void;
 }
 
-interface RenderBufferParameters
+export interface RenderBufferParameters
 {
     width   : number;
     height  : number;
     format? : any; // number (gd.PIXELFORMAT_R8G8B8A8) or string ('R8G8B8A8')
 }
 
-interface RenderBuffer
+export interface RenderBuffer
 {
     id     : number;
     width  : number;
@@ -455,7 +459,7 @@ interface RenderBuffer
     destroy();
 }
 
-interface TextureParameters
+export interface TextureParameters
 {
     src?: string;
     onload?: { (t: Texture, status?: number): void; };
@@ -473,7 +477,7 @@ interface TextureParameters
     data?: any;
 }
 
-interface Texture
+export interface Texture
 {
     id: number;
     name: string;
@@ -493,7 +497,7 @@ interface Texture
     destroy();
 }
 
-interface TextureArchiveParams
+export interface TextureArchiveParams
 {
     src: string;
     mipmaps?: boolean;
@@ -501,7 +505,7 @@ interface TextureArchiveParams
     onload?: { (success: boolean, status: number): void; };
 }
 
-interface RenderTargetParameters
+export interface RenderTargetParameters
 {
     colorTexture0  : Texture;
     colorTexture1? : Texture;
@@ -512,7 +516,7 @@ interface RenderTargetParameters
     face?          : number;
 }
 
-interface RenderTarget
+export interface RenderTarget
 {
     id            : number;
     width         : number;
@@ -536,20 +540,20 @@ interface RenderTarget
     destroy(): void;
 }
 
-interface Semantics
+export interface Semantics
 {
     length: number;
     [index: number]: any;
 }
 
-interface VertexAttribute
+export interface VertexAttribute
 {
     stride: number;
     numComponents: number;
     format: any;
 }
 
-interface VertexBufferParameters
+export interface VertexBufferParameters
 {
     numVertices : number;
     attributes  : any[];
@@ -559,13 +563,13 @@ interface VertexBufferParameters
     data?       : any; // ArrayBufferView or Array
 }
 
-interface VertexWriteIterator
+export interface VertexWriteIterator
 {
     (... data: any[]): void;
     write: (... data: any[]) => void;
 }
 
-interface VertexBuffer
+export interface VertexBuffer
 {
     id          : number;
     numVertices : number;
@@ -583,7 +587,7 @@ interface VertexBuffer
     destroy(): void;
 }
 
-interface IndexBufferParameters
+export interface IndexBufferParameters
 {
     numIndices : number;
     format     : any; // gd.INDEXFORMAT_USHORT (number) or 'USHORT' (string)
@@ -594,13 +598,13 @@ interface IndexBufferParameters
 }
 
 // TODO: How are functions IndexBufferWriter assigned to
-interface IndexWriteIterator
+export interface IndexWriteIterator
 {
     (... data: any[]): void;
     write(... data: any[]): void;
 }
 
-interface IndexBuffer
+export interface IndexBuffer
 {
     id         : number;
     numIndices : number;
@@ -616,7 +620,7 @@ interface IndexBuffer
     destroy(): void;
 }
 
-interface DrawParameters
+export interface DrawParameters
 {
     technique       : Technique;
     primitive       : number;
@@ -640,22 +644,22 @@ interface DrawParameters
     getOffset(index: number): number;
 }
 
-interface OcclusionQuery
+export interface OcclusionQuery
 {
 }
 
-interface TimerQuery
+export interface TimerQuery
 {
 }
 
-interface VideoParameters
+export interface VideoParameters
 {
     src: string;
     looping?: boolean;
     onload: { (v: Video, status: number): void; };
 }
 
-interface Video
+export interface Video
 {
     looping : boolean;
     playing : boolean;
@@ -672,7 +676,7 @@ interface Video
     destroy(): void;
 }
 
-interface GraphicsDeviceParameters
+export interface GraphicsDeviceParameters
 {
     vsync?       : boolean;
     multisample? : number;
@@ -681,7 +685,7 @@ interface GraphicsDeviceParameters
     stencil?     : boolean;
 }
 
-interface GraphicsDeviceMetrics
+export interface GraphicsDeviceMetrics
 {
     renderTargetChanges: number;
     textureChanges: number;
@@ -696,7 +700,7 @@ interface GraphicsDeviceMetrics
     primitives: number;
 }
 
-interface GraphicsDevice
+export interface GraphicsDevice
 {
     //
     PIXELFORMAT_A8           : number;
@@ -889,7 +893,7 @@ interface GraphicsDevice
 // PhysicsDevice
 // -----------------------------------------------------------------------------
 
-interface PhysicsShape
+export interface PhysicsShape
 {
     type: string;
     margin: number;
@@ -898,13 +902,13 @@ interface PhysicsShape
     inertia: any; // v3
 }
 
-interface PhysicsTriangleArray
+export interface PhysicsTriangleArray
 {
     vertices : Float32Array; // getter for _private.vertices
     indices  : any;          // Uint16Array / Uint32Array
 }
 
-interface PhysicsCollisionObject
+export interface PhysicsCollisionObject
 {
     transform   : any; // m43
     shape       : PhysicsShape;
@@ -922,7 +926,7 @@ interface PhysicsCollisionObject
     clone(): PhysicsCollisionObject;
 }
 
-interface PhysicsRigidBody extends PhysicsCollisionObject
+export interface PhysicsRigidBody extends PhysicsCollisionObject
 {
     linearVelocity  : any; // v3
     angularVelocity : any; // v3
@@ -935,7 +939,7 @@ interface PhysicsRigidBody extends PhysicsCollisionObject
     clone(): PhysicsRigidBody;
 }
 
-interface PhysicsCharacter
+export interface PhysicsCharacter
 {
     velocity      : any; // v3
     position      : any; // v3
@@ -952,7 +956,7 @@ interface PhysicsCharacter
     jump(): void;
 }
 
-interface PhysicsConstraint
+export interface PhysicsConstraint
 {
     bodyA: PhysicsCollisionObject;
     bodyB: PhysicsCollisionObject;
@@ -961,7 +965,7 @@ interface PhysicsConstraint
     type: string;
 }
 
-interface PhysicsPoint2PointConstraint extends PhysicsConstraint
+export interface PhysicsPoint2PointConstraint extends PhysicsConstraint
 {
     pivotA: any; // v3
     pivotB: any; // v3
@@ -970,13 +974,13 @@ interface PhysicsPoint2PointConstraint extends PhysicsConstraint
     impulseClamp: number;
 }
 
-interface PhysicsHingeConstraint extends PhysicsConstraint
+export interface PhysicsHingeConstraint extends PhysicsConstraint
 {
     low: number;
     high: number;
 }
 
-interface PhysicsConeTwistConstraint extends PhysicsConstraint
+export interface PhysicsConeTwistConstraint extends PhysicsConstraint
 {
     swingSpan1: number;
     swingSpan2: number;
@@ -984,7 +988,7 @@ interface PhysicsConeTwistConstraint extends PhysicsConstraint
     twistAngle: number;
 }
 
-interface Physics6DOFConstraint extends PhysicsConstraint
+export interface Physics6DOFConstraint extends PhysicsConstraint
 {
     linearLowerLimit: any; // v3
     linearUpperLimit: any; // v3
@@ -992,7 +996,7 @@ interface Physics6DOFConstraint extends PhysicsConstraint
     angularUpperLimit: any; // v3
 }
 
-interface PhysicsSliderConstraint extends PhysicsConstraint
+export interface PhysicsSliderConstraint extends PhysicsConstraint
 {
     linearLowerLimit: number;
     linearUpperLimit: number;
@@ -1000,7 +1004,7 @@ interface PhysicsSliderConstraint extends PhysicsConstraint
     angularUpperLimit: number;
 }
 
-interface RayTestParameters
+export interface RayTestParameters
 {
     from: any; // v3
     to: any; // v3
@@ -1009,12 +1013,12 @@ interface RayTestParameters
     exclude?: PhysicsCollisionObject;
 }
 
-interface ConvexSweepTestParameters extends RayTestParameters
+export interface ConvexSweepTestParameters extends RayTestParameters
 {
     shape: PhysicsShape;
 }
 
-interface RayHit
+export interface RayHit
 {
     collisionObject? : PhysicsCollisionObject;
     body?            : PhysicsRigidBody;
@@ -1022,7 +1026,7 @@ interface RayHit
     hitNormal        : any; // v3
 }
 
-interface PhysicsWorld
+export interface PhysicsWorld
 {
     gravity           : any; // v3
     maxSubSteps       : number;
@@ -1046,7 +1050,7 @@ interface PhysicsWorld
     flush(): void;
 }
 
-interface PhysicsDevice
+export interface PhysicsDevice
 {
     FILTER_DYNAMIC: number;
     FILTER_STATIC: number;
@@ -1094,7 +1098,7 @@ interface PhysicsDevice
 interface SoundDataFn { (amplitude: number, frequency: number,
                          wavefrequency: number, length: number): any; }
 
-interface SoundParameters
+export interface SoundParameters
 {
     src?        : string;
     uncompress? : boolean;
@@ -1107,7 +1111,7 @@ interface SoundParameters
     onload?     : { (sound: Sound, status: number): void; };
 }
 
-interface Sound
+export interface Sound
 {
     name       : string;
     frequency  : number;
@@ -1121,7 +1125,7 @@ interface Sound
 
 // SoundEffect
 
-interface SoundEffectParameters
+export interface SoundEffectParameters
 {
     name                 : string;
     type                 : string;
@@ -1149,7 +1153,7 @@ interface SoundEffectParameters
     decayHFLimit?        : number;
 }
 
-interface SoundEffect
+export interface SoundEffect
 {
     name: string;
     type: string;
@@ -1175,13 +1179,13 @@ interface SoundEffect
 
 // SoundEffectSlot
 
-interface SoundEffectSlotParameters
+export interface SoundEffectSlotParameters
 {
     effect : SoundEffect;
     gain   : number;
 }
 
-interface SoundEffectSlot
+export interface SoundEffectSlot
 {
     effect            : SoundEffect;
     gain              : number;
@@ -1190,7 +1194,7 @@ interface SoundEffectSlot
 
 // SoundFilter
 
-interface SoundFilterParameters
+export interface SoundFilterParameters
 {
     name    : string;
     type    : string;
@@ -1200,7 +1204,7 @@ interface SoundFilterParameters
     gainHF? : number;
 }
 
-interface SoundFilter
+export interface SoundFilter
 {
     name: string;
     type: string;
@@ -1209,7 +1213,7 @@ interface SoundFilter
 }
 
 // SoundSource
-interface SoundSourceParameters
+export interface SoundSourceParameters
 {
     position?    : any; // v3
     direction?   : any; // v3
@@ -1223,7 +1227,7 @@ interface SoundSourceParameters
     pitch?       : number;
 }
 
-interface SoundSource
+export interface SoundSource
 {
     position    : any; // v3
     velocity    : any; // v3
@@ -1254,14 +1258,14 @@ interface SoundSource
 }
 
 // SoundGlobalSource
-interface SoundGlobalSourceParameters
+export interface SoundGlobalSourceParameters
 {
     gain?        : number;
     looping?     : boolean;
     pitch?       : number;
 }
 
-interface SoundGlobalSource
+export interface SoundGlobalSource
 {
     gain        : number;
     looping     : boolean;
@@ -1286,7 +1290,7 @@ interface SoundGlobalSource
 
 // SoundArchiveParameters
 
-interface SoundArchiveParameters
+export interface SoundArchiveParameters
 {
     src            : string;
     decodearchive? : { (bytes: any): any };
@@ -1298,7 +1302,7 @@ interface SoundArchiveParameters
 
 // SoundDevice
 
-interface SoundDeviceParameters
+export interface SoundDeviceParameters
 {
     deviceSpecifier?   : string;
     linearDistance?    : boolean;
@@ -1311,7 +1315,7 @@ interface SoundDeviceParameters
     listenerGain?      : number;
 }
 
-interface SoundDevice
+export interface SoundDevice
 {
     vendor                : string;
     renderer              : string;
@@ -1345,7 +1349,7 @@ interface SoundDevice
 // NetworkDevice
 // -----------------------------------------------------------------------------
 
-interface NetworkDevice
+export interface NetworkDevice
 {
     createWebSocket(url: string, protocol?: string): WebSocket;
     update(): void;
@@ -1354,25 +1358,38 @@ interface NetworkDevice
 // -----------------------------------------------------------------------------
 // InputDevice
 // -----------------------------------------------------------------------------
-
-interface TouchEvent
+/*
+export interface Touch
 {
-    gameTouches: any[];
-    touches: any[];
-    changedTouches: any;
+    force: number;
+    identifier: number;
+    isGameTouch: boolean;
+    positionX: number;
+    positionY: number;
+    radiusX: number;
+    radiusY: number;
+    rotationAngle: number;
+    // create(params: any): Touch;
+}
+*/
+export interface TouchEvent
+{
+    gameTouches: Touch[];
+    touches: Touch[];
+    changedTouches: Touch[];
 }
 
-interface InputDeviceEventListener
+export interface InputDeviceEventListener
 {
     (...arg0: any[]): void; //?, arg1?, arg2?, arg3?, arg4?, arg5?): void;
 }
 
-interface InputDeviceUnicodeResult
+export interface InputDeviceUnicodeResult
 {
     [keyCode: number]: string;
 }
 
-interface InputDevice
+export interface InputDevice
 {
     // These maps are 'any' so that application code can do any do
     // keyCodes.A or keyCodes['A'].  The string indexer doesn't allow
@@ -1402,7 +1419,7 @@ interface InputDevice
 // TurbulenzEngine
 // -----------------------------------------------------------------------------
 
-interface SystemInfoDisplayMode
+export interface SystemInfoDisplayMode
 {
     width: number;
     height: number;
@@ -1410,7 +1427,7 @@ interface SystemInfoDisplayMode
     refreshHz: number;
 }
 
-interface SystemInfo
+export interface SystemInfo
 {
     architecture      : string;
     cpuDescription    : string;
@@ -1434,12 +1451,12 @@ interface SystemInfo
     plugin?           : boolean;
 }
 
-interface TurbulenzRequestCallback
+export interface TurbulenzRequestCallback
 {
     (asset: any, status: number): void;
 }
 
-interface TurbulenzEngine
+export interface TurbulenzEngine
 {
     version              : string;
     time                 : number;
@@ -1511,4 +1528,4 @@ interface TurbulenzEngine
 // -----------------------------------------------------------------------------
 
 /* tslint:disable:no-unused-variable */
-declare var TurbulenzEngine : TurbulenzEngine;
+export declare var turbulenzEngine : TurbulenzEngine;

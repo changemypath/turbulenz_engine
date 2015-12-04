@@ -138,6 +138,7 @@ SceneLoader.prototype =
             }
 
             // Create a resource loader to resolve any references in the scene data
+	    var ResourceLoader = require('resourceloader').ResourceLoader;
             var resourceLoader = ResourceLoader.create();
             resourceLoader.resolve({
                 data : sceneData,
@@ -160,6 +161,8 @@ SceneLoader.prototype =
 SceneLoader.create = function sceneLoaderCreateFn()
 {
     var sceneLoader = new SceneLoader();
+    var debug = require('debug').debug;
+    debug.log('SceneLoader.create');
 
     sceneLoader.scene = null;
     sceneLoader.assetPath = null;
@@ -176,3 +179,6 @@ SceneLoader.create = function sceneLoaderCreateFn()
 
     return sceneLoader;
 };
+
+exports.SceneLoader = SceneLoader;
+module.id = "sceneloader";

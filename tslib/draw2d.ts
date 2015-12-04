@@ -1,5 +1,10 @@
 // Copyright (c) 2012-2013 Turbulenz Limited
 
+import debugimport = require('./debug.ts');
+var debug: debugimport.TurbulenzDebug = debugimport.debug;
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,TextureParameters,VertexBufferParameters,IndexBufferParameters,RenderTargetParameters,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../tslib/turbulenz.d.ts';
+import {draw2D_cgfx} from '../jslib/_generated/draw2D.cgfx.ts';
+
 /*global
 Draw2D: false
 Float32Array: false
@@ -57,7 +62,7 @@ interface Draw2DSpriteParams
 //
 // Draw2DSprite
 //
-class Draw2DSprite
+export class Draw2DSprite
 {
     static version = 1;
 
@@ -657,7 +662,7 @@ interface Draw2DParameters
     maxGpuMemory?     : number;
 }
 
-class Draw2D
+export class Draw2D
 {
     static version = 7;
     forceUpdate = false;
@@ -2582,3 +2587,4 @@ class Draw2D
         }
     }
 }());
+

@@ -1,31 +1,42 @@
 // Copyright (c) 2011-2013 Turbulenz Limited
+import gamesession = require('./gamesession.ts');
+import turbulenzservicesi = require('./turbulenzservices.ts');
+import turbulenzbridgei = require('./turbulenzbridge.ts');
+import requesthandleri = require('../requesthandler.ts');
+import sessiontokeni = require('./sessiontoken.ts');
+import u = require('../utilities.ts');
+import debugi = require('../debug.ts');
+var debug = debugi.debug;
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../../tslib/turbulenz.d.ts';
+import {turbulenzEngine} from '../turbulenz.d.ts';
+
 
 /*global TurbulenzServices: false*/
-/*global TurbulenzEngine: false*/
+/*global turbulenzEngine: false*/
 /*global TurbulenzBridge: false*/
 /*global SessionToken: false*/
 /*global debug: false*/
 
-interface NotificationMessage
+export interface NotificationMessage
 {
     text: string;
     data: any;
 };
 
-interface NotificationError
+export interface NotificationError
 {
     error: string;
     status: number;
 };
 
-interface UserSettings
+export interface UserSettings
 {
     email_setting: number;
     site_setting: number;
 };
 
 
-class NotificationPromise
+export class NotificationPromise
 {
     __successCallback: any = null;
     __errorCallback: any = null;
@@ -47,7 +58,7 @@ class NotificationPromise
         var id = this.__id;
         if (id)
         {
-            TurbulenzEngine.setTimeout(function () {
+            turbulenzEngine.setTimeout(function () {
                 callback(id);
             }, 0);
         }
@@ -61,7 +72,7 @@ class NotificationPromise
         var error = this.__error;
         if (error)
         {
-            TurbulenzEngine.setTimeout(function () {
+            turbulenzEngine.setTimeout(function () {
                 callback(error);
             }, 0);
         }
@@ -109,7 +120,7 @@ class NotificationPromise
     }
 }
 
-interface sendNotificationPromiseList
+export interface sendNotificationPromiseList
 {
     [token: string] : NotificationPromise;
 }
@@ -117,7 +128,7 @@ interface sendNotificationPromiseList
 //
 // NotificationsManager
 
-interface SendNotificationParameters
+export interface SendNotificationParameters
 {
     key             : string;
     msg             : NotificationMessage;
@@ -128,14 +139,14 @@ interface SendNotificationParameters
 }
 
 //
-class NotificationsManager
+export class NotificationsManager
 {
     static version = 1;
 
-    gameSession             : GameSession;
-    service                 : ServiceRequester;
-    requestHandler          : RequestHandler;
-    tokenFactory            : SessionToken;
+    gameSession             : gamesession.GameSession;
+    service                 : turbulenzservicesi.ServiceRequester;
+    requestHandler          : requesthandleri.RequestHandler;
+    tokenFactory            : sessiontokeni.SessionToken;
     notificationPromises    : sendNotificationPromiseList;
 
     currentUser             : string;
@@ -206,7 +217,7 @@ class NotificationsManager
             noNotification: params.noNotification
         };
 
-        TurbulenzBridge.triggerSendInstantNotification(
+        turbulenzbridgei.TurbulenzBridge.triggerSendInstantNotification(
             JSON.stringify(notifyparams)
         );
 
@@ -252,7 +263,7 @@ class NotificationsManager
             noNotification: params.noNotification
         };
 
-        TurbulenzBridge.triggerSendDelayedNotification(
+        turbulenzbridgei.TurbulenzBridge.triggerSendDelayedNotification(
             JSON.stringify(notifyparams)
         );
 
@@ -261,7 +272,7 @@ class NotificationsManager
 
     cancelNotificationByID(ident: string) : void
     {
-        TurbulenzBridge.triggerCancelNotificationByID(JSON.stringify({
+        turbulenzbridgei.TurbulenzBridge.triggerCancelNotificationByID(JSON.stringify({
             id: ident,
             session: this.gameSession
         }));
@@ -273,7 +284,7 @@ class NotificationsManager
         {
             throw new Error('Unknown key "' + key + '" given.');
         }
-        TurbulenzBridge.triggerCancelNotificationsByKey(JSON.stringify({
+        turbulenzbridgei.TurbulenzBridge.triggerCancelNotificationsByKey(JSON.stringify({
             key: key,
             session: this.gameSession
         }));
@@ -281,7 +292,7 @@ class NotificationsManager
 
     cancelAllNotifications() : void
     {
-        TurbulenzBridge.triggerCancelAllNotifications(JSON.stringify({
+        turbulenzbridgei.TurbulenzBridge.triggerCancelAllNotifications(JSON.stringify({
             session: this.gameSession
         }));
     }
@@ -412,14 +423,14 @@ class NotificationsManager
     onInit(): void
     {
         this.ready = true;
-        TurbulenzBridge.triggerInitNotificationManager(JSON.stringify({
+        turbulenzbridgei.TurbulenzBridge.triggerInitNotificationManager(JSON.stringify({
             session: this.gameSession
         }));
     }
 
 
-    static create( requestHandler: RequestHandler,
-                   gameSession: GameSession,
+    static create( requestHandler: requesthandleri.RequestHandler,
+                   gameSession: gamesession.GameSession,
                    successCallbackFn?: (nm: NotificationsManager) => void,
                    errorCallbackFn?: (error: NotificationError) => void ): NotificationsManager
     {
@@ -430,12 +441,12 @@ class NotificationsManager
             /* tslint:enable:no-empty */
         }
 
-        if (!TurbulenzServices.available())
+        if (!turbulenzservicesi.TurbulenzServices.available())
         {
-            debug.log("notificationsManagerCreateFn: !! TurbulenzServices not available");
+            debug.log("notificationsManagerCreateFn: !! turbulenzservicesi.TurbulenzServices not available");
 
             // Call error callback on a timeout to get the same behaviour as the ajax call
-            TurbulenzEngine.setTimeout(function () {
+            turbulenzEngine.setTimeout(function () {
                 errorCallbackFn({
                     status: null,
                     error: 'TurbulenzServices.createNotificationsManager requires Turbulenz services'
@@ -449,21 +460,21 @@ class NotificationsManager
         notificationsManager.gameSession = gameSession;
         notificationsManager.handlers = {};
 
-        notificationsManager.tokenFactory = SessionToken.create();
+        notificationsManager.tokenFactory = sessiontokeni.SessionToken.create();
         notificationsManager.notificationPromises = {};
-        TurbulenzBridge.setOnNotificationSent(function (data) {
+        turbulenzbridgei.TurbulenzBridge.setOnNotificationSent(function (data) {
 
             notificationsManager.onNotificationSent.call(notificationsManager, data);
 
         });
 
-        TurbulenzBridge.setOnReceiveNotification(function(data) {
+        turbulenzbridgei.TurbulenzBridge.setOnReceiveNotification(function(data) {
 
             notificationsManager.onNotificationReceived.call(notificationsManager, data);
 
         });
 
-        notificationsManager.service = TurbulenzServices.getService('notifications');
+        notificationsManager.service = turbulenzservicesi.TurbulenzServices.getService('notifications');
         notificationsManager.requestHandler = requestHandler;
 
         notificationsManager.ready = false;

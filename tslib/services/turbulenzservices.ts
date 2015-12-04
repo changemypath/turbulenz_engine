@@ -1,10 +1,27 @@
 // Copyright (c) 2011-2013 Turbulenz Limited
+import gamesession = require('./gamesession.ts');
+import mappingtable = require('./mappingtable.ts');
+import turbulenzBridge = require('./turbulenzBridge.ts');
+var TurbulenzBridge = turbulenzBridge.TurbulenzBridge;
+import leaderboardmanager = require('./leaderboardmanager.ts');
+import badgemanager = require('./badgemanager.ts');
+import storemanager = require('./storemanager.ts');
+import notificationsmanager = require('./notificationsmanager.ts');
+import requesthandleri = require('../requesthandler.ts');
+import observeri = require('../observer.ts');
+import u = require('../utilities.ts');
+import multiplayersessionmanageri = require('./multiplayersessionmanager.ts');
+import debugi = require('../debug.ts');
+var debug = debugi.debug;
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../../tslib/turbulenz.d.ts';
+import {Window,TurbulenzBridgeConfig,TurbulenzBridgeServiceRequestData,TurbulenzBridgeServiceRequest,TurbulenzBridgeServiceResponseData,TurbulenzBridgeServiceResponse,GameSessionCreateRequest,GameSessionCreateResponseMappingTable,GameSessionCreateResponse,GameSessionDestroyRequest,UserDataRequestBase,UserDataGetKeysRequest,userDataExistsRequest,userDataGetRequest,userDataSetRequest,userDataRemoveRequest,userDataRemoveAllRequest,BadgeDescription,BadgeDescriptionList,BadgeMetaResponse,BadgeAddProgressRequest,BadgeProgress,BadgeAddResponse,BadgeProgressList,BadgeReadResponse,Currency,BasketItem,BasketItemList,Basket,CalculatedBasketItem,CalculatedBasketItemList,CalculatedBasket,StoreItem,StoreItemList,StoreOfferingOutput,StoreOffering,StoreOfferingList,StoreOfferingPriceAPI,StoreOfferingAPIResponse,StoreResource,StoreResourceList,StoreMetaData,TransactionRequest,Transaction,TransactionPaymentParameters,TransactionPayment} from './servicedatatypes.d.ts';
+import {turbulenzEngine} from '../turbulenz.d.ts';
 
 /*global BadgeManager: false*/
 /*global window: false*/
 /*global GameSession: false*/
 /*global TurbulenzBridge: false*/
-/*global TurbulenzEngine: false*/
+/*global turbulenzEngine: false*/
 /*global Utilities: false*/
 /*global MappingTable: false*/
 /*global LeaderboardManager: false*/
@@ -14,6 +31,7 @@
 /*global StoreManager: false*/
 /*global NotificationsManager: false*/
 /*global debug: false*/
+
 
 interface UserProfile
 {
@@ -41,7 +59,7 @@ interface UserUpgradeCB
     (): void;
 }
 
-class CustomMetricEvent
+export class CustomMetricEvent
 {
     key: string;
     value: any;
@@ -53,7 +71,7 @@ class CustomMetricEvent
     }
 };
 
-class CustomMetricEventBatch
+export class CustomMetricEventBatch
 {
     events: CustomMetricEvent[];
 
@@ -62,7 +80,7 @@ class CustomMetricEventBatch
         var event = CustomMetricEvent.create();
         event.key = key;
         event.value = value;
-        event.timeOffset = TurbulenzEngine.time;
+        event.timeOffset = turbulenzEngine.time;
         this.events.push(event);
     }
 
@@ -84,25 +102,25 @@ class CustomMetricEventBatch
     }
 };
 
-interface ServiceResponse
+export interface ServiceResponse
 {
     ok   : boolean;
     msg  : string;
     data : any;
 };
 
-interface ServiceRequestParams
+export interface ServiceRequestParams
 {
     url                 : string;
     method              : string;
     data?               : any;
     callback            : { (response: ServiceResponse,
                              status: number): void; };
-    requestHandler      : RequestHandler;
+    requestHandler      : requesthandleri.RequestHandler;
     neverDiscard?       : boolean;
 };
 
-interface ServiceErrorCB
+export interface ServiceErrorCB
 {
     (errorMsg: string, httpStatus?: number): void;
 }
@@ -111,12 +129,12 @@ interface ServiceErrorCB
 // ServiceRequester
 // -----------------------------------------------------------------------------
 
-class ServiceRequester
+export class ServiceRequester
 {
     static locationOrigin : string;
     running               : boolean;
     discardRequests       : boolean;
-    serviceStatusObserver : Observer;
+    serviceStatusObserver : observeri.Observer;
     serviceName           : string;
     onServiceUnavailable  : { (service: ServiceRequester, callCtx?: any)
                               : void; };
@@ -206,7 +224,7 @@ class ServiceRequester
         {
             if (this.discardRequests && !params.neverDiscard)
             {
-                TurbulenzEngine.setTimeout(discardRequestFn, 0);
+                turbulenzEngine.setTimeout(discardRequestFn, 0);
                 return false;
             }
 
@@ -256,7 +274,7 @@ class ServiceRequester
                     }
                     else
                     {
-                        Utilities.log('Game session closed');
+                        u.Utilities.log('Game session closed');
                     }
                     return false;
                 }
@@ -270,7 +288,7 @@ class ServiceRequester
             return true;
         };
 
-        Utilities.ajax(params);
+        u.Utilities.ajax(params);
         return true;
     }
 
@@ -293,7 +311,7 @@ class ServiceRequester
         // we assume everything is working at first
         serviceRequester.running = true;
         serviceRequester.discardRequests = false;
-        serviceRequester.serviceStatusObserver = Observer.create();
+        serviceRequester.serviceStatusObserver = observeri.Observer.create();
 
         serviceRequester.serviceName = serviceName;
 
@@ -307,7 +325,7 @@ class ServiceRequester
 //
 // TurbulenzServices
 //
-class TurbulenzServices
+export class TurbulenzServices
 {
 
     static onGameSessionClosed: { () : void; };
@@ -374,7 +392,7 @@ class TurbulenzServices
 
     static available() : boolean
     {
-        return window.gameSlug !== undefined;
+        return window["gameSlug"] !== undefined;
     }
 
     static responseHandlers: any[]; // TODO
@@ -382,12 +400,12 @@ class TurbulenzServices
 
     static addBridgeEvents()
     {
-        var turbulenz = window.Turbulenz;
+        var turbulenz = window["Turbulenz"];
         if (!turbulenz)
         {
             try
             {
-                turbulenz = window.top.Turbulenz;
+                turbulenz = window.top["Turbulenz"];
             }
             /* tslint:disable:no-empty */
             catch (e)
@@ -475,9 +493,9 @@ class TurbulenzServices
     {
         var str;
         data.requestUrl = url;
-        str = TurbulenzEngine.encrypt(JSON.stringify(data));
+        str = turbulenzEngine.encrypt(JSON.stringify(data));
         data.str = str;
-        data.signature = TurbulenzEngine.generateSignature(str);
+        data.signature = turbulenzEngine.generateSignature(str);
         return data;
     }
 
@@ -510,14 +528,14 @@ class TurbulenzServices
 
     static createGameSession(requestHandler, sessionCreatedFn, errorCallbackFn?, options?)
     {
-        return GameSession.create(requestHandler, sessionCreatedFn,
+        return gamesession.GameSession.create(requestHandler, sessionCreatedFn,
                                   errorCallbackFn, options);
     }
 
     static createMappingTable(requestHandler, gameSession,
                               tableReceivedFn,
                               defaultMappingSettings?,
-                              errorCallbackFn?) : MappingTable
+                              errorCallbackFn?) : mappingtable.MappingTable
     {
         var mappingTable;
         var mappingTableSettings = gameSession && gameSession.mappingTable;
@@ -562,7 +580,7 @@ class TurbulenzServices
             errorCallback(msg);
         };
 
-        var mappingTableParams : MappingTableParameters = {
+        var mappingTableParams : mappingtable.MappingTableParameters = {
             mappingTableURL: mappingTableURL,
             mappingTablePrefix: mappingTablePrefix,
             assetPrefix: assetPrefix,
@@ -571,47 +589,47 @@ class TurbulenzServices
             errorCallback: mappingTableErr
         };
 
-        mappingTable = MappingTable.create(mappingTableParams);
+        mappingTable = mappingtable.MappingTable.create(mappingTableParams);
         return mappingTable;
     }
 
     static createLeaderboardManager(requestHandler, gameSession,
                                     leaderboardMetaReceived?,
-                                    errorCallbackFn?) : LeaderboardManager
+                                    errorCallbackFn?) : leaderboardmanager.LeaderboardManager
     {
-        return LeaderboardManager.create(requestHandler, gameSession,
+        return leaderboardmanager.LeaderboardManager.create(requestHandler, gameSession,
                                          leaderboardMetaReceived,
                                          errorCallbackFn);
     }
 
-    static createBadgeManager(requestHandler: RequestHandler,
-                              gameSession: GameSession) : BadgeManager
+    static createBadgeManager(requestHandler: requesthandleri.RequestHandler,
+                              gameSession: gamesession.GameSession) : badgemanager.BadgeManager
     {
-        return BadgeManager.create(requestHandler, gameSession);
+        return badgemanager.BadgeManager.create(requestHandler, gameSession);
     }
 
     static createStoreManager(requestHandler, gameSession, storeMetaReceived?,
-                              errorCallbackFn?) : StoreManager
+                              errorCallbackFn?) : storemanager.StoreManager
     {
-        return StoreManager.create(requestHandler,
+        return storemanager.StoreManager.create(requestHandler,
                                    gameSession,
                                    storeMetaReceived,
                                    errorCallbackFn);
     }
 
     static createNotificationsManager(requestHandler, gameSession, successCallbackFn, errorCallbackFn)
-    : NotificationsManager
+    : notificationsmanager.NotificationsManager
     {
-        return NotificationsManager.create(requestHandler, gameSession, successCallbackFn, errorCallbackFn);
+        return notificationsmanager.NotificationsManager.create(requestHandler, gameSession, successCallbackFn, errorCallbackFn);
     }
 
     static createMultiplayerSessionManager(requestHandler, gameSession)
-    : MultiPlayerSessionManager
+    : multiplayersessionmanageri.MultiPlayerSessionManager
     {
-        return MultiPlayerSessionManager.create(requestHandler, gameSession);
+        return multiplayersessionmanageri.MultiPlayerSessionManager.create(requestHandler, gameSession);
     }
 
-    static createUserProfile(requestHandler: RequestHandler,
+    static createUserProfile(requestHandler: requesthandleri.RequestHandler,
                              profileReceivedFn?: UserProfileReceivedCB,
                              errorCallbackFn?): UserProfile
     {
@@ -670,7 +688,7 @@ class TurbulenzServices
             // No Turbulenz services.  Make the error callback
             // asynchronously.
 
-            TurbulenzEngine.setTimeout(function () {
+            turbulenzEngine.setTimeout(function () {
                 errorCallbackFn("Error: createUserProfile: Turbulenz Services "
                                 + "unavailable");
             }, 0.001);
@@ -696,8 +714,8 @@ class TurbulenzServices
 
     static sendCustomMetricEvent(eventKey: string,
                                  eventValue: any,
-                                 requestHandler: RequestHandler,
-                                 gameSession: GameSession,
+                                 requestHandler: requesthandleri.RequestHandler,
+                                 gameSession: gamesession.GameSession,
                                  errorCallbackFn?)
     {
         if (!errorCallbackFn)
@@ -776,8 +794,8 @@ class TurbulenzServices
     }
 
     static sendCustomMetricEventBatch(eventBatch: CustomMetricEventBatch,
-                                      requestHandler: RequestHandler,
-                                      gameSession: GameSession,
+                                      requestHandler: requesthandleri.RequestHandler,
+                                      gameSession: gamesession.GameSession,
                                       errorCallbackFn?)
     {
         if (!errorCallbackFn)
@@ -798,7 +816,7 @@ class TurbulenzServices
         // Validation
 
         // Test eventBatch is correct type
-        var currentTime = TurbulenzEngine.time;
+        var currentTime = turbulenzEngine.time;
         var events = eventBatch.events;
         var eventIndex;
         var numEvents = events.length;
@@ -941,7 +959,7 @@ class TurbulenzServices
         var that = this;
         var pollServiceStatus;
 
-        var serviceUrl = '/api/v1/service-status/game/read/' + window.gameSlug;
+        var serviceUrl = '/api/v1/service-status/game/read/' + window["gameSlug"];
         var servicesStatusCB = function servicesStatusCBFn(responseObj, status)
         {
             if (status === 200)
@@ -1006,11 +1024,11 @@ class TurbulenzServices
                     this.pollingServiceStatus = false;
                     return;
                 }
-                TurbulenzEngine.setTimeout(pollServiceStatus, statusObj.pollInterval * 1000);
+                turbulenzEngine.setTimeout(pollServiceStatus, statusObj.pollInterval * 1000);
             }
             else
             {
-                TurbulenzEngine.setTimeout(pollServiceStatus, that.defaultPollInterval);
+                turbulenzEngine.setTimeout(pollServiceStatus, that.defaultPollInterval);
             }
         };
 
@@ -1045,7 +1063,7 @@ class TurbulenzServices
 
         pollServiceStatus = function pollServiceStatusFn()
         {
-            Utilities.ajax(params);
+            u.Utilities.ajax(params);
         };
 
         pollServiceStatus();
@@ -1060,3 +1078,5 @@ else
 {
     debug.log("No TurbulenzBridge object");
 }
+
+

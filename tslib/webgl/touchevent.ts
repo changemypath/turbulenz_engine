@@ -1,10 +1,12 @@
 // Copyright (c) 2012 Turbulenz Limited
+import {Touch} from './touch.ts';
+import {TouchEvent} from '../turbulenz.d.ts';
 
-class WebGLTouchEvent implements TouchEvent
+export class WebGLTouchEvent implements TouchEvent
 {
-    gameTouches    : any[];
-    touches        : any[];
-    changedTouches : any;
+    gameTouches    : Touch[];
+    touches        : Touch[];
+    changedTouches : Touch[];
 
     static create(params): TouchEvent
     {

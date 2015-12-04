@@ -4,6 +4,12 @@
 /*global debug: false*/
 /*jshint nomen: false*/
 
+import turbulenzservices = require('./turbulenzservices.ts');
+var TurbulenzServices = turbulenzservices.TurbulenzServices;
+import debugimport = require('../debug.ts');
+var debug = debugimport.debug;
+import {Window,TurbulenzBridgeConfig,TurbulenzBridgeServiceRequestData,TurbulenzBridgeServiceRequest,TurbulenzBridgeServiceResponseData,TurbulenzBridgeServiceResponse,GameSessionCreateRequest,GameSessionCreateResponseMappingTable,GameSessionCreateResponse,GameSessionDestroyRequest,UserDataRequestBase,UserDataGetKeysRequest,userDataExistsRequest,userDataGetRequest,userDataSetRequest,userDataRemoveRequest,userDataRemoveAllRequest,BadgeDescription,BadgeDescriptionList,BadgeMetaResponse,BadgeAddProgressRequest,BadgeProgress,BadgeAddResponse,BadgeProgressList,BadgeReadResponse,Currency,BasketItem,BasketItemList,Basket,CalculatedBasketItem,CalculatedBasketItemList,CalculatedBasket,StoreItem,StoreItemList,StoreOfferingOutput,StoreOffering,StoreOfferingList,StoreOfferingPriceAPI,StoreOfferingAPIResponse,StoreResource,StoreResourceList,StoreMetaData,TransactionRequest,Transaction,TransactionPaymentParameters,TransactionPayment} from './servicedatatypes.d.ts';
+
 /*
  * An object that takes care of communication with the gamesite and, among
  * other things, replaces the deprecated 'osdlib' module.
@@ -13,7 +19,7 @@
  * the page or request information about a player's settings.
  */
 
-class TurbulenzBridge
+export class TurbulenzBridge
 {
     private static _bridge = undefined;
 
@@ -22,12 +28,12 @@ class TurbulenzBridge
      */
     static _initInstance()
     {
-        var Turbulenz = window.Turbulenz;
+        var Turbulenz = window["Turbulenz"];
         if (!Turbulenz)
         {
             try
             {
-                Turbulenz = window.top.Turbulenz;
+                Turbulenz = window.top["Turbulenz"];
             }
             /* tslint:disable:no-empty */
             catch (e)
@@ -392,9 +398,13 @@ class TurbulenzBridge
     {
         this.emit('query.user.state', callback);
     }
+
+    static checkInit() {
+      if (!TurbulenzBridge.isInitialised()) {
+        TurbulenzBridge._initInstance();
+      }
+    }
 }
 
-if (!TurbulenzBridge.isInitialised())
-{
-    TurbulenzBridge._initInstance();
-}
+
+

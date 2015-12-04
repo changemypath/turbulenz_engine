@@ -1,31 +1,35 @@
 // Copyright (c) 2010-2014 Turbulenz Limited
+import utilitiesi = require('./utilities.ts');
+import effectmanageri = require('./effectmanager.ts');
+import texturemanageri = require('./texturemanager.ts');
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice} from '../tslib/turbulenz.d.ts';
 
 /*global Reference: false */
 
 //
 // Material
 //
-class Material
+export class Material
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
     /* tslint:enable:no-unused-variable */
 
     name                : string;
-    reference           : Reference;
+    reference           : utilitiesi.Reference;
     techniqueParameters : TechniqueParameters;
     meta                : any;
-    effect              : Effect;
+    effect              : effectmanageri.Effect;
     effectName          : string;
     texturesNames       : { [name: string]: string; }; // name -> filename?
-    textureInstances    : { [name: string]: TextureInstance; };
+    textureInstances    : { [name: string]: texturemanageri.TextureInstance; };
 
-    onTextureChanged    : { (textureInstance: TextureInstance): void; };
+    onTextureChanged    : { (textureInstance: texturemanageri.TextureInstance): void; };
 
     static create(graphicsDevice: GraphicsDevice) : Material
     {
         var newMaterial = new Material();
-        newMaterial.reference = Reference.create(newMaterial);
+        newMaterial.reference = utilitiesi.Reference.create(newMaterial);
         newMaterial.techniqueParameters = graphicsDevice.createTechniqueParameters();
         newMaterial.meta = {};
 

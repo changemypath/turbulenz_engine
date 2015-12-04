@@ -1,12 +1,22 @@
 // Copyright (c) 2009-2014 Turbulenz Limited
+// import {FontDimensions,FontGlyph,FontKerning,FontKerningMap,FontDrawParameters,FontDrawPageContext,Font,FontManagerFonts,FontManager} from '../tslib/fontmanager.ts';
 
-/*global TurbulenzEngine: false*/
+import debugi = require('./debug.ts');
+var debug = debugi.debug;
+import requesthandleri = require('../tslib/requesthandler.ts');
+import observeri = require('../tslib/observer.ts');
+// import u = require('../tslib/utilities.ts');
+import {Log} from '../../turbulenz/libs/log.ts';
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,TextureParameters,VertexBufferParameters,IndexBufferParameters,RenderTargetParameters,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../tslib/turbulenz.d.ts';
+import {turbulenzEngine} from '../tslib/turbulenz.d.ts';
+
+/*global turbulenzEngine: false*/
 /*global Observer: false*/
 /*global Float32Array: false*/
 
 "use strict";
 
-interface FontDimensions
+export interface FontDimensions
 {
     width        : number;
     height       : number;
@@ -24,7 +34,7 @@ interface FontDimensions
     };
 }
 
-interface FontGlyph
+export interface FontGlyph
 {
     width   : number;
     height  : number;
@@ -39,19 +49,19 @@ interface FontGlyph
 }
 
 // A FontKerning is a map from character code to spacing values.
-interface FontKerning
+export interface FontKerning
 {
     [charcode: number]: number;
 }
 
 // Map from character code to the corresponding kerning values.
-interface FontKerningMap
+export interface FontKerningMap
 {
     [charcode: number]: FontKerning;
 }
 
 // Parameters to the drawTextRect call
-interface FontDrawParameters
+export interface FontDrawParameters
 {
     rect        : any;
     scale       : number;
@@ -63,7 +73,7 @@ interface FontDrawParameters
 
 // Maintains the per-page info for a given string.
 
-interface FontDrawPageContext
+export interface FontDrawPageContext
 {
     vertices    : Float32Array;
     vertexIndex : number;
@@ -73,9 +83,9 @@ interface FontDrawPageContext
    @class  Font
    @private
 
-   @since TurbulenzEngine 0.1.0
+   @since turbulenzEngine 0.1.0
 */
-class Font
+export class Font
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -594,15 +604,15 @@ class Font
   @class  Font manager
   @private
 
-  @since TurbulenzEngine 0.1.0
+  @since turbulenzEngine 0.1.0
 */
 
-interface FontManagerFonts
+export interface FontManagerFonts
 {
     [name: string]: Font;
 }
 
-class FontManager
+export class FontManager
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -672,7 +682,7 @@ class FontManager
        @return {FontManager} object, null if failed
     */
     static create(gd: GraphicsDevice,
-                  rh: RequestHandler,
+                  rh: requesthandleri.RequestHandler,
                   df?: Font,
                   errorCallback?: { (msg: string): void; },
                   log?: HTMLElement): FontManager
@@ -1017,7 +1027,7 @@ class FontManager
                     loadingPages[path] = 0;
                     numLoadingFonts += 1;
 
-                    var observer = Observer.create();
+                    var observer = observeri.Observer.create();
                     loadedObservers[path] = observer;
                     if (onFontLoaded)
                     {
@@ -1197,7 +1207,7 @@ class FontManager
                 if (onFontLoaded)
                 {
                     // the callback should always be called asynchronously
-                    TurbulenzEngine.setTimeout(function fontAlreadyLoadedFn()
+                    turbulenzEngine.setTimeout(function fontAlreadyLoadedFn()
                                                {
                                                    onFontLoaded(font);
                                                }, 0);

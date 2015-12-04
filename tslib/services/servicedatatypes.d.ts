@@ -1,4 +1,5 @@
 // Copyright (c) 2011-2013 Turbulenz Limited
+// import {Window,TurbulenzBridgeConfig,TurbulenzBridgeServiceRequestData,TurbulenzBridgeServiceRequest,TurbulenzBridgeServiceResponseData,TurbulenzBridgeServiceResponse,GameSessionCreateRequest,GameSessionCreateResponseMappingTable,GameSessionCreateResponse,GameSessionDestroyRequest,UserDataRequestBase,UserDataGetKeysRequest,userDataExistsRequest,userDataGetRequest,userDataSetRequest,userDataRemoveRequest,userDataRemoveAllRequest,BadgeDescription,BadgeDescriptionList,BadgeMetaResponse,BadgeAddProgressRequest,BadgeProgress,BadgeAddResponse,BadgeProgressList,BadgeReadResponse,Currency,BasketItem,BasketItemList,Basket,CalculatedBasketItem,CalculatedBasketItemList,CalculatedBasket,StoreItem,StoreItemList,StoreOfferingOutput,StoreOffering,StoreOfferingList,StoreOfferingPriceAPI,StoreOfferingAPIResponse,StoreResource,StoreResourceList,StoreMetaData,TransactionRequest,Transaction,TransactionPaymentParameters,TransactionPayment} from './servicedatatypes.d.ts';
 
 // Collection of type declarations used by both sides of the bridge,
 // and by some services and managers that receive data across the
@@ -7,9 +8,9 @@
 // as a canonical place to keep this type information.
 
 //
-// Elements on Window
+// Elements on Windowt
 //
-interface Window
+export interface Window
 {
     Turbulenz: any;
     gameSlug: string;
@@ -19,7 +20,7 @@ interface Window
 // TurbulenzBridgeConfig
 //
 // Structure sent to 'config.set' when 'config.request' is called.
-interface TurbulenzBridgeConfig
+export interface TurbulenzBridgeConfig
 {
     mode                      : string;
     syncing?                  : boolean;
@@ -29,7 +30,7 @@ interface TurbulenzBridgeConfig
     joinMultiplayerSessionId? : string;
 }
 
-interface TurbulenzBridgeServiceRequestData
+export interface TurbulenzBridgeServiceRequestData
 {
     url: string;  // URL of the API this represents
     data: any;    // Data specific to the service request
@@ -39,7 +40,7 @@ interface TurbulenzBridgeServiceRequestData
 // TurbulenzBridgeServiceRequest
 //
 // Structure sent to 'bridgeservices.*' requests
-interface TurbulenzBridgeServiceRequest
+export interface TurbulenzBridgeServiceRequest
 {
     key: number;
     data: TurbulenzBridgeServiceRequestData;
@@ -47,7 +48,7 @@ interface TurbulenzBridgeServiceRequest
 
 // The data part of a response to a bridge service.  This is extended
 // by each of the provided services.
-interface TurbulenzBridgeServiceResponseData
+export interface TurbulenzBridgeServiceResponseData
 {
     status: number;
 }
@@ -58,7 +59,7 @@ interface TurbulenzBridgeServiceResponseData
 // Structure sent from the bridge via 'bridgeservices.repsonse' in
 // reply to 'bridgeservices.*' requests.  (Currently same as the
 // request struct, but with a status value.
-interface TurbulenzBridgeServiceResponse
+export interface TurbulenzBridgeServiceResponse
 {
     key: number;
     data: TurbulenzBridgeServiceResponseData;
@@ -68,25 +69,25 @@ interface TurbulenzBridgeServiceResponse
 // GameSession API
 //
 
-interface GameSessionCreateRequest
+export interface GameSessionCreateRequest
 {
     closeExistingSessions?: number;  // 1 or unset
 }
 
-interface GameSessionCreateResponseMappingTable
+export interface GameSessionCreateResponseMappingTable
 {
     assetPrefix: string;
     mappingTablePrefix: string;
     mappingTableURL: string;
 }
 
-interface GameSessionCreateResponse extends TurbulenzBridgeServiceResponseData
+export interface GameSessionCreateResponse extends TurbulenzBridgeServiceResponseData
 {
     mappingTable: GameSessionCreateResponseMappingTable;
     gameSessionId: string;
 }
 
-interface GameSessionDestroyRequest
+export interface GameSessionDestroyRequest
 {
     gameSessionId: string;
 }
@@ -95,27 +96,27 @@ interface GameSessionDestroyRequest
 // UserData*Request structures
 //
 
-interface UserDataRequestBase
+export interface UserDataRequestBase
 {
     gameSessionId: string;
 }
-interface UserDataGetKeysRequest extends UserDataRequestBase
+export interface UserDataGetKeysRequest extends UserDataRequestBase
 {
 }
-interface userDataExistsRequest extends UserDataRequestBase
+export interface userDataExistsRequest extends UserDataRequestBase
 {
 }
-interface userDataGetRequest extends UserDataRequestBase
+export interface userDataGetRequest extends UserDataRequestBase
 {
 }
-interface userDataSetRequest extends UserDataRequestBase
+export interface userDataSetRequest extends UserDataRequestBase
 {
     value: string;
 }
-interface userDataRemoveRequest extends UserDataRequestBase
+export interface userDataRemoveRequest extends UserDataRequestBase
 {
 }
-interface userDataRemoveAllRequest extends UserDataRequestBase
+export interface userDataRemoveAllRequest extends UserDataRequestBase
 {
 }
 
@@ -123,7 +124,7 @@ interface userDataRemoveAllRequest extends UserDataRequestBase
 // Badges
 //
 
-interface BadgeDescription
+export interface BadgeDescription
 {
     key             : string;
     title           : string; /// May be localized
@@ -142,25 +143,25 @@ interface BadgeDescription
     imageresource?  : string;
 }
 
-interface BadgeDescriptionList extends Array<BadgeDescription>
+export interface BadgeDescriptionList extends Array<BadgeDescription>
 {
 }
 
 /// Returned by badge.meta (badges/read/<session>)
-interface BadgeMetaResponse extends TurbulenzBridgeServiceResponseData
+export interface BadgeMetaResponse extends TurbulenzBridgeServiceResponseData
 {
     data: BadgeDescriptionList;
 }
 
 /// Data passed to badge.add (badge/progress/add/<session>)
-interface BadgeAddProgressRequest
+export interface BadgeAddProgressRequest
 {
     gameSessionId : string;
     badge_key     : string;
     current?      : number;  /// If omitted, the badge is awarded immediately
 }
 
-interface BadgeProgress
+export interface BadgeProgress
 {
     badge_key : string;
     achieved  : boolean;
@@ -169,17 +170,17 @@ interface BadgeProgress
 }
 
 /// Returned by badge.add call (badge/progress/add/<session>)
-interface BadgeAddResponse extends TurbulenzBridgeServiceResponseData
+export interface BadgeAddResponse extends TurbulenzBridgeServiceResponseData
 {
     data: BadgeProgress;
 }
 
-interface BadgeProgressList extends Array<BadgeProgress>
+export interface BadgeProgressList extends Array<BadgeProgress>
 {
 }
 
 /// Returned by badge.read call (badges/progress/read/<session>)
-interface BadgeReadResponse extends TurbulenzBridgeServiceResponseData
+export interface BadgeReadResponse extends TurbulenzBridgeServiceResponseData
 {
     data: BadgeProgressList;
 }
@@ -187,7 +188,7 @@ interface BadgeReadResponse extends TurbulenzBridgeServiceResponseData
 //
 // Currency
 //
-interface Currency
+export interface Currency
 {
     currencyName: string;
     alphabeticCode: string;
@@ -196,12 +197,12 @@ interface Currency
 }
 
 //
-interface BasketItem
+export interface BasketItem
 {
     amount: number;
 }
 
-interface BasketItemList
+export interface BasketItemList
 {
     [key: string]: BasketItem;
 }
@@ -210,13 +211,13 @@ interface BasketItemList
 // Basket - Simple list of items with no price or currency
 // information, passed from StoreManager to the Bridge.
 //
-interface Basket
+export interface Basket
 {
     basketItems : BasketItemList;
     token       : string;
 }
 
-interface CalculatedBasketItem
+export interface CalculatedBasketItem
 {
   amount: number;
   lineTotal: string;
@@ -228,12 +229,12 @@ interface CalculatedBasketItem
 // TurbulenzBridge, with currency, price, lineprices, etc all
 // calculated.
 //
-interface CalculatedBasketItemList
+export interface CalculatedBasketItemList
 {
     [key: string]: CalculatedBasketItem;
 }
 
-interface CalculatedBasket
+export interface CalculatedBasket
 {
   currency : Currency;
   items    : CalculatedBasketItemList;
@@ -244,7 +245,7 @@ interface CalculatedBasket
 //
 // StoreItemList - item meta data with a key, title, description and index
 //
-interface StoreItem
+export interface StoreItem
 {
     key: string;
     title: string;
@@ -252,7 +253,7 @@ interface StoreItem
     index: number;
 }
 
-interface StoreItemList
+export interface StoreItemList
 {
     [itemKey: string]: StoreItem;
 }
@@ -260,7 +261,7 @@ interface StoreItemList
 //
 // StoreOfferingOutput
 //
-interface StoreOfferingOutput
+export interface StoreOfferingOutput
 {
     [outputKey: string]: { amount: number; };
 }
@@ -269,14 +270,14 @@ interface StoreOfferingOutput
 // StoreOffering - meta data about a single offering in the store,
 // passed from the bridge to StoreManager.
 //
-interface StoreOffering extends StoreItem
+export interface StoreOffering extends StoreItem
 {
     available : boolean;
     price     : string;
     output    : StoreOfferingOutput;
 }
 
-interface StoreOfferingList
+export interface StoreOfferingList
 {
     [itemKey: string]: StoreOffering;
 }
@@ -286,7 +287,7 @@ interface StoreOfferingList
 // StoreOfferingAPIResponse.  Each entry is the value in minor units
 // for that currency.
 //
-interface StoreOfferingPriceAPI
+export interface StoreOfferingPriceAPI
 {
     [currencyCode: string]: number;
 }
@@ -295,14 +296,14 @@ interface StoreOfferingPriceAPI
 // StoreOfferingAPIResponse - the Offering information passed back from
 // the http API.
 //
-interface StoreOfferingAPIResponse extends StoreItem
+export interface StoreOfferingAPIResponse extends StoreItem
 {
     available : boolean;
     prices    : StoreOfferingPriceAPI;
     output    : StoreOfferingOutput;
 }
 
-interface StoreOfferingAPIResponseList
+export interface StoreOfferingAPIResponseList
 {
     [offeringKey: string]: StoreOfferingAPIResponse;
 }
@@ -310,12 +311,12 @@ interface StoreOfferingAPIResponseList
 //
 // StoreResource - meta data about a single resource in the store
 //
-interface StoreResource extends StoreItem
+export interface StoreResource extends StoreItem
 {
     type: string;
 }
 
-interface StoreResourceList
+export interface StoreResourceList
 {
     [itemKey: string]: StoreResource;
 }
@@ -325,7 +326,7 @@ interface StoreResourceList
 //
 // Passed from the Bridge to StoreManager
 //
-interface StoreMetaData
+export interface StoreMetaData
 {
     currency  : string;
     items     : StoreOfferingList;
@@ -336,7 +337,7 @@ interface StoreMetaData
 //
 // TransactionRequest - sent to 'api/v1/store/transactions/checkout'
 //
-interface TransactionRequest
+export interface TransactionRequest
 {
     gameSlug: string;
     basket?: any;              // TODO:
@@ -346,7 +347,7 @@ interface TransactionRequest
 //
 // Transaction - response from 'api/v1/store/transactions/checkout'
 //
-interface Transaction
+export interface Transaction
 {
     transactionId   : string;
     paymentUrl?     : string;
@@ -357,7 +358,7 @@ interface Transaction
 // TransactionPaymentParameters - parameters to
 // 'api/v1/store/transactions/pay/<id>'
 //
-interface TransactionPaymentParameters
+export interface TransactionPaymentParameters
 {
     basket             : string;
     providerData       : string;
@@ -367,7 +368,7 @@ interface TransactionPaymentParameters
 //
 // TransactionPayment - response from 'api/v1/store/transactions/pay/<id>'
 //
-interface TransactionPayment
+export interface TransactionPayment
 {
     status: string;    // "checkout", "processing", "completed"
 }

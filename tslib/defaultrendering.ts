@@ -1,22 +1,30 @@
 // Copyright (c) 2009-2014 Turbulenz Limited
+import shadermanageri = require('./shadermanager.ts');
+import camerai = require('./camera.ts');
+import scenei = require('./scene.ts');
+import geometryi = require('./geometry.ts');
+import effectmanageri = require('./effectmanager.ts');
+import renderingcommonsi = require('./renderingcommon.ts');
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../tslib/turbulenz.d.ts';
+import {turbulenzEngine} from '../tslib/turbulenz.d.ts';
 
 //
 // DefaultRendering
 //
 
-/*global TurbulenzEngine: false*/
+/*global turbulenzEngine: false*/
 /*global renderingCommonCreateRendererInfoFn: false*/
 /*global renderingCommonSortKeyFn: false*/
 /*global Effect: false*/
 
-interface DefaultRenderingPassIndex
+export interface DefaultRenderingPassIndex
 {
     opaque: number;
     decal: number;
     transparent: number;
 };
 
-interface DefaultRenderingRendererInfo
+export interface DefaultRenderingRendererInfo
 {
     id: number;
     frameVisible: number;
@@ -29,7 +37,7 @@ interface DefaultRenderingRendererInfo
     worldInverseTranspose?: any;   // m33
 };
 
-class DefaultRendering
+export class DefaultRendering
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -50,7 +58,7 @@ class DefaultRendering
     static identityUVTransform = new Float32Array([1, 0, 0, 1, 0, 0]);
 
     md                        : MathDevice;
-    sm                        : ShaderManager;
+    sm                        : shadermanageri.ShaderManager;
     lightPositionUpdated      : boolean;
     lightPosition             : any; // v3
     eyePositionUpdated        : boolean;
@@ -59,17 +67,17 @@ class DefaultRendering
     globalTechniqueParametersArray : TechniqueParameters[];
     passes                    : any[];  // (Pass/[])[]
     defaultSkinBufferSize     : number;
-    camera                    : Camera;
-    scene                     : Scene;
+    camera                    : camerai.Camera;
+    scene                     : scenei.Scene;
 
     wireframeInfo             : any; // TODO
     wireframe                 : boolean;
 
-    defaultPrepareFn          : { (geometryInstance: Geometry): void; };
-    defaultUpdateFn           : { (camera: Camera): void; };
-    defaultSkinnedUpdateFn    : { (camera: Camera): void; };
+    defaultPrepareFn          : { (geometryInstance: geometryi.Geometry): void; };
+    defaultUpdateFn           : { (camera: camerai.Camera): void; };
+    defaultSkinnedUpdateFn    : { (camera: camerai.Camera): void; };
 
-    loadTechniquesFn          : { (shaderManager: ShaderManager): void; };
+    loadTechniquesFn          : { (shaderManager: shadermanageri.ShaderManager): void; };
 
     /* tslint:disable:no-empty */
     updateShader(/* sm */)
@@ -296,7 +304,7 @@ class DefaultRendering
     //
     static defaultPrepareFn(geometryInstance)
     {
-        var drawParameters = TurbulenzEngine.getGraphicsDevice().createDrawParameters();
+        var drawParameters = turbulenzEngine.getGraphicsDevice().createDrawParameters();
         drawParameters.userData = {};
         geometryInstance.drawParameters = [drawParameters];
         geometryInstance.prepareDrawParameters(drawParameters);
@@ -319,7 +327,7 @@ class DefaultRendering
         // NOTE: the way this functions is called, 'this' is an
         // EffectPrepareObject.
 
-        drawParameters.technique = (<EffectPrepareObject><any>this).technique;
+        drawParameters.technique = (<effectmanageri.EffectPrepareObject><any>this).technique;
 
         drawParameters.setTechniqueParameters(0, sharedMaterial.techniqueParameters);
         drawParameters.setTechniqueParameters(1, techniqueParameters);
@@ -340,7 +348,7 @@ class DefaultRendering
         var node = geometryInstance.node;
         if (!node.rendererInfo)
         {
-            var md = TurbulenzEngine.getMathDevice();
+            var md = turbulenzEngine.getMathDevice();
             node.rendererInfo = <DefaultRenderingRendererInfo> {
                 id: DefaultRendering.nextRenderinfoID,
                 frameVisible: -1,
@@ -358,7 +366,7 @@ class DefaultRendering
         techniqueParameters.worldViewProjection = rendererInfo.worldViewProjection;
         techniqueParameters.lightPosition = rendererInfo.lightPosition;
 
-        var techniqueName = (<EffectPrepareObject><any>this).technique.name;
+        var techniqueName = (<effectmanageri.EffectPrepareObject><any>this).technique.name;
         if (techniqueName.indexOf("flat") === -1 &&
             techniqueName.indexOf("lambert") === -1)
         {
@@ -375,19 +383,19 @@ class DefaultRendering
                 DefaultRendering.nextSkinID += 1;
             }
             drawParameters.sortKey =
-                -renderingCommonSortKeyFn((<EffectPrepareObject><any>this).techniqueIndex,
+                -renderingcommonsi.renderingCommonSortKeyFn((<effectmanageri.EffectPrepareObject><any>this).techniqueIndex,
                                           skinController.index,
                                           sharedMaterial.meta.materialIndex);
         }
         else
         {
             drawParameters.sortKey =
-                renderingCommonSortKeyFn((<EffectPrepareObject><any>this).techniqueIndex,
+                renderingcommonsi.renderingCommonSortKeyFn((<effectmanageri.EffectPrepareObject><any>this).techniqueIndex,
                                          sharedMaterial.meta.materialIndex,
                                          rendererInfo.id);
         }
 
-        geometryInstance.renderUpdate = (<EffectPrepareObject><any>this).update;
+        geometryInstance.renderUpdate = (<effectmanageri.EffectPrepareObject><any>this).update;
     }
 
     //
@@ -395,8 +403,8 @@ class DefaultRendering
     //
     static create(gd: GraphicsDevice,
                   md: MathDevice,
-                  shaderManager: ShaderManager,
-                  effectsManager: EffectManager): DefaultRendering
+                  shaderManager: shadermanageri.ShaderManager,
+                  effectsManager: effectmanageri.EffectManager): DefaultRendering
     {
         var dr = new DefaultRendering();
 
@@ -599,7 +607,7 @@ class DefaultRendering
             }
         };
 
-        var loadTechniques = function loadTechniquesFn(shaderManager: ShaderManager): void
+        var loadTechniques = function loadTechniquesFn(shaderManager: shadermanageri.ShaderManager): void
         {
             var that = this;
 
@@ -627,7 +635,7 @@ class DefaultRendering
         //
         // constant
         //
-        effect = Effect.create("constant");
+        effect = effectmanageri.Effect.create("constant");
         effectsManager.add(effect);
 
         effectTypeData = {  prepare : noDiffusePrepare,
@@ -649,7 +657,7 @@ class DefaultRendering
         //
         // constant_nocull
         //
-        effect = Effect.create("constant_nocull");
+        effect = effectmanageri.Effect.create("constant_nocull");
         effectsManager.add(effect);
 
         effectTypeData = {  prepare : noDiffusePrepare,
@@ -671,7 +679,7 @@ class DefaultRendering
         //
         // lambert
         //
-        effect = Effect.create("lambert");
+        effect = effectmanageri.Effect.create("lambert");
         effectsManager.add(effect);
 
         effectTypeData = {  prepare : defaultPrepare,
@@ -693,7 +701,7 @@ class DefaultRendering
         //
         // blinn
         //
-        effect = Effect.create("blinn");
+        effect = effectmanageri.Effect.create("blinn");
         effectsManager.add(effect);
 
         effectTypeData = {  prepare : defaultPrepare,
@@ -715,7 +723,7 @@ class DefaultRendering
         //
         // blinn_nocull
         //
-        effect = Effect.create("blinn_nocull");
+        effect = effectmanageri.Effect.create("blinn_nocull");
         effectsManager.add(effect);
 
         effectTypeData = {  prepare : defaultPrepare,
@@ -737,7 +745,7 @@ class DefaultRendering
         //
         // phong
         //
-        effect = Effect.create("phong");
+        effect = effectmanageri.Effect.create("phong");
         effectsManager.add(effect);
 
         effectTypeData = {  prepare : defaultPrepare,
@@ -759,7 +767,7 @@ class DefaultRendering
         //
         // debug_lines_constant
         //
-        effect = Effect.create("debug_lines_constant");
+        effect = effectmanageri.Effect.create("debug_lines_constant");
         effectsManager.add(effect);
 
         effectTypeData = {  prepare : debugLinesPrepare,
@@ -773,7 +781,7 @@ class DefaultRendering
         //
         // debug_normals
         //
-        effect = Effect.create("debug_normals");
+        effect = effectmanageri.Effect.create("debug_normals");
         effectsManager.add(effect);
 
         effectTypeData = {  prepare : DefaultRendering.defaultPrepareFn,
@@ -795,7 +803,7 @@ class DefaultRendering
         //
         // debug_tangents
         //
-        effect = Effect.create("debug_tangents");
+        effect = effectmanageri.Effect.create("debug_tangents");
         effectsManager.add(effect);
 
         effectTypeData = {  prepare : DefaultRendering.defaultPrepareFn,
@@ -817,7 +825,7 @@ class DefaultRendering
         //
         // debug_binormals
         //
-        effect = Effect.create("debug_binormals");
+        effect = effectmanageri.Effect.create("debug_binormals");
         effectsManager.add(effect);
 
         effectTypeData = {  prepare : DefaultRendering.defaultPrepareFn,
@@ -839,7 +847,7 @@ class DefaultRendering
         //
         // normalmap
         //
-        effect = Effect.create("normalmap");
+        effect = effectmanageri.Effect.create("normalmap");
         effectsManager.add(effect);
 
         effectTypeData = {  prepare : defaultPrepare,
@@ -861,7 +869,7 @@ class DefaultRendering
         //
         // normalmap_specularmap
         //
-        effect = Effect.create("normalmap_specularmap");
+        effect = effectmanageri.Effect.create("normalmap_specularmap");
         effectsManager.add(effect);
 
         effectTypeData = {  prepare : defaultPrepare,
@@ -883,7 +891,7 @@ class DefaultRendering
         //
         // normalmap_specularmap_alphamap
         //
-        effect = Effect.create("normalmap_specularmap_alphamap");
+        effect = effectmanageri.Effect.create("normalmap_specularmap_alphamap");
         effectsManager.add(effect);
 
         effectTypeData = {  prepare : defaultPrepare,
@@ -897,7 +905,7 @@ class DefaultRendering
         //
         // normalmap_alphatest
         //
-        effect = Effect.create("normalmap_alphatest");
+        effect = effectmanageri.Effect.create("normalmap_alphatest");
         effectsManager.add(effect);
         effectTypeData = {  prepare : defaultPrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -919,7 +927,7 @@ class DefaultRendering
         //
         // normalmap_specularmap_alphatest
         //
-        effect = Effect.create("normalmap_specularmap_alphatest");
+        effect = effectmanageri.Effect.create("normalmap_specularmap_alphatest");
         effectsManager.add(effect);
         effectTypeData = {  prepare : defaultPrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -940,7 +948,7 @@ class DefaultRendering
         //
         // normalmap_glowmap
         //
-        effect = Effect.create("normalmap_glowmap");
+        effect = effectmanageri.Effect.create("normalmap_glowmap");
         effectsManager.add(effect);
         effectTypeData = {  prepare : defaultPrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -961,7 +969,7 @@ class DefaultRendering
         //
         // normalmap_specularmap_glowmap
         //
-        effect = Effect.create("normalmap_specularmap_glowmap");
+        effect = effectmanageri.Effect.create("normalmap_specularmap_glowmap");
         effectsManager.add(effect);
         effectTypeData = {  prepare : defaultPrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -982,7 +990,7 @@ class DefaultRendering
         //
         // rxgb_normalmap
         //
-        effect = Effect.create("rxgb_normalmap");
+        effect = effectmanageri.Effect.create("rxgb_normalmap");
         effectsManager.add(effect);
         effectTypeData = {  prepare : defaultPrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -1003,7 +1011,7 @@ class DefaultRendering
         //
         // rxgb_normalmap_specularmap
         //
-        effect = Effect.create("rxgb_normalmap_specularmap");
+        effect = effectmanageri.Effect.create("rxgb_normalmap_specularmap");
         effectsManager.add(effect);
         effectTypeData = {  prepare : defaultPrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -1024,7 +1032,7 @@ class DefaultRendering
         //
         // rxgb_normalmap_alphatest
         //
-        effect = Effect.create("rxgb_normalmap_alphatest");
+        effect = effectmanageri.Effect.create("rxgb_normalmap_alphatest");
         effectsManager.add(effect);
         effectTypeData = {  prepare : defaultPrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -1045,7 +1053,7 @@ class DefaultRendering
         //
         // rxgb_normalmap_specularmap_alphatest
         //
-        effect = Effect.create("rxgb_normalmap_specularmap_alphatest");
+        effect = effectmanageri.Effect.create("rxgb_normalmap_specularmap_alphatest");
         effectsManager.add(effect);
         effectTypeData = {  prepare : defaultPrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -1066,7 +1074,7 @@ class DefaultRendering
         //
         // rxgb_normalmap_glowmap
         //
-        effect = Effect.create("rxgb_normalmap_glowmap");
+        effect = effectmanageri.Effect.create("rxgb_normalmap_glowmap");
         effectsManager.add(effect);
         effectTypeData = {  prepare : defaultPrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -1087,7 +1095,7 @@ class DefaultRendering
         //
         // rxgb_normalmap_specularmap_glowmap
         //
-        effect = Effect.create("rxgb_normalmap_specularmap_glowmap");
+        effect = effectmanageri.Effect.create("rxgb_normalmap_specularmap_glowmap");
         effectsManager.add(effect);
         effectTypeData = {  prepare : defaultPrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -1108,7 +1116,7 @@ class DefaultRendering
         //
         // add
         //
-        effect = Effect.create("add");
+        effect = effectmanageri.Effect.create("add");
         effectsManager.add(effect);
         effectTypeData = {  prepare : defaultPrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -1129,7 +1137,7 @@ class DefaultRendering
         //
         // add_particle
         //
-        effect = Effect.create("add_particle");
+        effect = effectmanageri.Effect.create("add_particle");
         effectsManager.add(effect);
         effectTypeData = {  prepare : defaultPrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -1142,7 +1150,7 @@ class DefaultRendering
         //
         // blend
         //
-        effect = Effect.create("blend");
+        effect = effectmanageri.Effect.create("blend");
         effectsManager.add(effect);
         effectTypeData = {  prepare : defaultPrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -1163,7 +1171,7 @@ class DefaultRendering
         //
         // blend_particle
         //
-        effect = Effect.create("blend_particle");
+        effect = effectmanageri.Effect.create("blend_particle");
         effectsManager.add(effect);
         effectTypeData = {  prepare : defaultPrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -1176,7 +1184,7 @@ class DefaultRendering
         //
         // translucent
         //
-        effect = Effect.create("translucent");
+        effect = effectmanageri.Effect.create("translucent");
         effectsManager.add(effect);
         effectTypeData = {  prepare : defaultPrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -1197,7 +1205,7 @@ class DefaultRendering
         //
         // translucent_particle
         //
-        effect = Effect.create("translucent_particle");
+        effect = effectmanageri.Effect.create("translucent_particle");
         effectsManager.add(effect);
         effectTypeData = {  prepare : defaultPrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -1210,7 +1218,7 @@ class DefaultRendering
         //
         // filter
         //
-        effect = Effect.create("filter");
+        effect = effectmanageri.Effect.create("filter");
         effectsManager.add(effect);
         effectTypeData = {  prepare : defaultPrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -1231,7 +1239,7 @@ class DefaultRendering
         //
         // invfilter
         //
-        effect = Effect.create("invfilter");
+        effect = effectmanageri.Effect.create("invfilter");
         effectsManager.add(effect);
         effectTypeData = {  prepare : defaultPrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -1244,7 +1252,7 @@ class DefaultRendering
         //
         // invfilter_particle
         //
-        effect = Effect.create("invfilter_particle");
+        effect = effectmanageri.Effect.create("invfilter_particle");
         effectsManager.add(effect);
         effectTypeData = {  prepare : defaultPrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -1257,7 +1265,7 @@ class DefaultRendering
         //
         // glass
         //
-        effect = Effect.create("glass");
+        effect = effectmanageri.Effect.create("glass");
         effectsManager.add(effect);
         effectTypeData = {  prepare : defaultPrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -1270,7 +1278,7 @@ class DefaultRendering
         //
         // glass_env
         //
-        effect = Effect.create("glass_env");
+        effect = effectmanageri.Effect.create("glass_env");
         effectsManager.add(effect);
         effectTypeData = {  prepare : noDiffusePrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -1283,7 +1291,7 @@ class DefaultRendering
         //
         // modulate2
         //
-        effect = Effect.create("modulate2");
+        effect = effectmanageri.Effect.create("modulate2");
         effectsManager.add(effect);
         effectTypeData = {  prepare : defaultPrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -1304,7 +1312,7 @@ class DefaultRendering
         //
         // skybox
         //
-        effect = Effect.create("skybox");
+        effect = effectmanageri.Effect.create("skybox");
         effectsManager.add(effect);
         effectTypeData = {  prepare : noDiffusePrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -1317,7 +1325,7 @@ class DefaultRendering
         //
         // env
         //
-        effect = Effect.create("env");
+        effect = effectmanageri.Effect.create("env");
         effectsManager.add(effect);
         effectTypeData = {  prepare : noDiffusePrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -1338,7 +1346,7 @@ class DefaultRendering
         //
         // flare
         //
-        effect = Effect.create("flare");
+        effect = effectmanageri.Effect.create("flare");
         effectsManager.add(effect);
         effectTypeData = {  prepare : defaultPrepare,
                             shaderName : "shaders/defaultrendering.cgfx",
@@ -1353,7 +1361,7 @@ class DefaultRendering
         //
         // glowmap
         //
-        effect = Effect.create("glowmap");
+        effect = effectmanageri.Effect.create("glowmap");
         effectsManager.add(effect);
 
         effectTypeData = {  prepare : noDiffusePrepare,
@@ -1375,7 +1383,7 @@ class DefaultRendering
         //
         // lightmap
         //
-        effect = Effect.create("lightmap");
+        effect = effectmanageri.Effect.create("lightmap");
         effectsManager.add(effect);
 
         effectTypeData = {  prepare : defaultPrepare,

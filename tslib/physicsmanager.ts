@@ -1,12 +1,16 @@
 // Copyright (c) 2010-2014 Turbulenz Limited
+import scenenodei = require('./scenenode.ts');
+import debugi = require('./debug.ts');
+var debug = debugi.debug;
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice} from '../tslib/turbulenz.d.ts';
 
 /*global Utilities: false */
 /*global SceneNode: false */
 
 // TODO: Does this inherit from some base Node?
-interface PhysicsNode
+export interface PhysicsNode
 {
-    target         : SceneNode;
+    target         : scenenodei.SceneNode;
     body           : PhysicsCollisionObject;
 
     origin?        : any; // v3
@@ -20,7 +24,7 @@ interface PhysicsNode
 //
 // physicsmanager
 //
-class PhysicsManager
+export class PhysicsManager
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -44,7 +48,7 @@ class PhysicsManager
     //
     // addNode
     //
-    addNode(sceneNode: SceneNode,
+    addNode(sceneNode: scenenodei.SceneNode,
             physicsObject: PhysicsCollisionObject,
             origin?: any,
             triangleArray?: any): void
@@ -502,7 +506,7 @@ class PhysicsManager
                 var targetName = fileNode.target;
                 if (nodesNamePrefix)
                 {
-                    targetName = SceneNode.makePath(nodesNamePrefix, targetName);
+                    targetName = scenenodei.SceneNode.makePath(nodesNamePrefix, targetName);
                 }
                 var target = scene.findNode(targetName);
                 if (!target)
@@ -1036,7 +1040,7 @@ class PhysicsManager
 
         var physicsManagerCloneNode =
             function physicsManagerCloneNodeFn(physicsNode: PhysicsNode,
-                                               targetSceneNode: SceneNode)
+                                               targetSceneNode: scenenodei.SceneNode)
         {
             var newPhysicsObject = physicsNode.body.clone();
 

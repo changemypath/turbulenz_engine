@@ -1,8 +1,15 @@
 // Copyright (c) 2010-2014 Turbulenz Limited
+import {RequestHandler} from './requesthandler';
+import {Renderable,SceneNode} from '../tslib/scenenode.ts';
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../tslib/turbulenz.d.ts';
+import {turbulenzEngine} from '../tslib/turbulenz.d.ts';
+import {_tz_techniqueParameterBufferCreate,VMath} from './vmath';
+import g = require('../libs/globals.ts');
+
 /*global TurbulenzEngine:false*/
 /*global VMath:false*/
 
-interface LoadParameters
+export interface LoadParameters
 {
     nodesNamePrefix?: string;
     shapesNamePrefix?: string;
@@ -17,18 +24,18 @@ interface LoadParameters
 
 };
 
-interface SceneParameters extends LoadParameters
+export interface SceneParameters extends LoadParameters
 {
     append: boolean;
     skin: any; // TODO:
 };
 
-interface GeometryInstanceParameters // extends GeometryInstance
+export interface GeometryInstanceParameters // extends GeometryInstance
 {
     geometry: string;
 }
 
-interface SceneNodeParameters // extends SceneNode
+export interface SceneNodeParameters // extends SceneNode
 {
     reference?: string;
     geometryinstances?: { [name: string]: GeometryInstanceParameters; };
@@ -41,7 +48,7 @@ interface SceneNodeParameters // extends SceneNode
 //
 // ResourceLoader
 //
-class ResourceLoader
+export class ResourceLoader
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -202,7 +209,7 @@ class ResourceLoader
         };
 
         // Import animations
-        var requestOwner = (loadParams.request ? loadParams : TurbulenzEngine);
+        var requestOwner = (loadParams.request ? loadParams : turbulenzEngine);
         for (var a in fileAnims)
         {
             if (fileAnims.hasOwnProperty(a))
@@ -249,7 +256,7 @@ class ResourceLoader
         var shapesNamePrefix = loadParams.shapesNamePrefix;
 
         var requestOwner =
-            (loadParams.request ? <any>loadParams : <any>TurbulenzEngine);
+            (loadParams.request ? <any>loadParams : <any>turbulenzEngine);
 
         var copyObject = function copyObjectFn(o)
         {
@@ -687,7 +694,7 @@ class ResourceLoader
 
         loadParams.requestHandler.request({
                 src: assetPath,
-                requestOwner: loadParams.request ? loadParams : TurbulenzEngine,
+                requestOwner: loadParams.request ? loadParams : turbulenzEngine,
                 onload: dataReceived
             });
     }

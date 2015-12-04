@@ -6,7 +6,7 @@
 // DeferredEffectTypeData
 //
 
-interface DeferredEffectTypeData extends EffectPrepareObject
+export interface DeferredEffectTypeData extends EffectPrepareObject
 {
 
     shaderName: string;
@@ -26,7 +26,7 @@ interface DeferredEffectTypeData extends EffectPrepareObject
          renderingCommonCreateRendererInfoFn: false,
          renderingCommonSortKeyFn: false*/
 
-class DeferredRendering
+export class DeferredRendering
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;

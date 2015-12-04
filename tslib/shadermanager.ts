@@ -1,11 +1,19 @@
 // Copyright (c) 2009-2014 Turbulenz Limited
+import requesthandleri = require('./requesthandler.ts');
+import defaultcgfxi = require('../jslib/_generated/default.cgfx.ts');
+import observeri = require('./observer.ts');
+import debugi = require('./debug.ts');
+var debug = debugi.debug;
+import {Log} from '../../turbulenz/libs/log.ts';
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../tslib/turbulenz.d.ts';
+import {turbulenzEngine} from './turbulenz.d.ts';
 
 /*global Observer: false*/
-/*global TurbulenzEngine: false*/
+/*global turbulenzEngine: false*/
 
 "use strict";
 
-interface ShaderManagerShaders
+export interface ShaderManagerShaders
 {
     [path: string]: Shader;
 }
@@ -13,7 +21,7 @@ interface ShaderManagerShaders
 //
 // ShaderManager
 //
-class ShaderManager
+export class ShaderManager
 {
     static version = 1;
 
@@ -42,7 +50,7 @@ class ShaderManager
        @return {ShaderManager} object, null if failed
     */
     static create(gd: GraphicsDevice,
-                  rh: RequestHandler,
+                  rh: requesthandleri.RequestHandler,
                   ds?: Shader,
                   errorCallback?: { (msg: string): void; },
                   log?: HTMLElement): ShaderManager
@@ -64,7 +72,7 @@ class ShaderManager
         else
         {
             // Generates from assets/shaders/default.cgfx
-            defaultShader = gd.createShader(default_cgfx);
+            defaultShader = gd.createShader(defaultcgfxi.default_cgfx);
             if (!defaultShader)
             {
                 errorCallback("Default shader not created.");
@@ -163,7 +171,7 @@ class ShaderManager
                     loadingShader[path] = true;
                     numLoadingShaders += 1;
 
-                    var observer = Observer.create();
+                    var observer = observeri.Observer.create();
                     loadedObservers[path] = observer;
                     if (onShaderLoaded)
                     {
@@ -230,7 +238,7 @@ class ShaderManager
             else if (onShaderLoaded)
             {
                 // the callback should always be called asynchronously
-                TurbulenzEngine.setTimeout(function shaderAlreadyLoadedFn()
+                turbulenzEngine.setTimeout(function shaderAlreadyLoadedFn()
                                            {
                                                onShaderLoaded(shader);
                                            }, 0);

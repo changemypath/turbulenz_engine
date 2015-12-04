@@ -1,6 +1,6 @@
 // Copyright (c) 2012 Turbulenz Limited
 
-class Touch
+export class Touch
 {
     force: number;
     identifier: number;

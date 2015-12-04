@@ -1,46 +1,50 @@
 // Copyright (c) 2011-2014 Turbulenz Limited
+import observeri = require('./observer.ts');
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../tslib/turbulenz.d.ts';
+import {turbulenzEngine} from '../tslib/turbulenz.d.ts';
 
-/*global TurbulenzEngine*/
+/*global turbulenzEngine*/
 /*global Observer*/
 
-interface RequestFn
+export interface RequestFn
 {
     (src: string, responseCallback, callContext: RequestHandlerCallContext)
     : void;
 };
 
-interface RequestOwner
+export interface RequestOwner
 {
     request: RequestFn;
 };
 
-interface RequestOnLoadCB
+export interface RequestOnLoadCB
 {
     (asset: any, status: number, callContext: RequestHandlerCallContext): void;
 }
 
-interface RequestHandlerResponseFilter
+export interface RequestHandlerResponseFilter
 {
     (callContext: RequestHandlerCallContext, makeRequest: { (): void; },
      responseAsset: string, status: number): boolean;
 };
 
-interface RequestHandlerCallContext
+export interface RequestHandlerCallContext
 {
     onload          : RequestOnLoadCB;
     src             : string;
     requestFn?      : RequestFn;
     requestOwner?   : RequestOwner;
     responseFilter? : RequestHandlerResponseFilter;
+    pageIdx?        : number;
 }
 
-interface RequestHandlerHandlers
+export interface RequestHandlerHandlers
 {
     eventOnload: any[];
     [index: string]: any[];
 }
 
-class RequestHandler
+export class RequestHandler
 {
     initialRetryTime: number;
     notifyTime: number;
@@ -48,7 +52,7 @@ class RequestHandler
 
     notifiedConnectionLost: boolean;
     connected: boolean;
-    reconnectedObserver: Observer;
+    reconnectedObserver: observeri.Observer;
     reconnectTest: any;
 
     connectionLostTime: number;
@@ -72,7 +76,7 @@ class RequestHandler
     retryExponential(callContext, requestFn, status)
     {
         if (!this.notifiedConnectionLost &&
-            TurbulenzEngine.time - this.connectionLostTime > (this.notifyTime * 0.001))
+            turbulenzEngine.time - this.connectionLostTime > (this.notifyTime * 0.001))
         {
             this.notifiedConnectionLost = true;
 
@@ -93,7 +97,7 @@ class RequestHandler
         // all following requests wait for a reconnection
         if (this.connected)
         {
-            this.connectionLostTime = TurbulenzEngine.time;
+            this.connectionLostTime = turbulenzEngine.time;
             this.notifiedConnectionLost = false;
             this.connected = false;
             this.reconnectTest = callContext;
@@ -133,7 +137,7 @@ class RequestHandler
         {
             callContext.retries = 1;
         }
-        TurbulenzEngine.setTimeout(requestFn, callContext.expTime);
+        turbulenzEngine.setTimeout(requestFn, callContext.expTime);
     }
 
     retryAfter(callContext, retryAfter, requestFn, status)
@@ -144,12 +148,12 @@ class RequestHandler
         }
         else
         {
-            callContext.firstRetry = TurbulenzEngine.time;
+            callContext.firstRetry = turbulenzEngine.time;
             callContext.retries = 1;
         }
 
         if (!callContext.notifiedMaxRetries &&
-            TurbulenzEngine.time - callContext.firstRetry + retryAfter > this.notifyTime)
+            turbulenzEngine.time - callContext.firstRetry + retryAfter > this.notifyTime)
         {
             callContext.notifiedMaxRetries = true;
 
@@ -158,7 +162,7 @@ class RequestHandler
             this.onRequestTimeout(reason, callContext);
         }
 
-        TurbulenzEngine.setTimeout(requestFn, retryAfter * 1000);
+        turbulenzEngine.setTimeout(requestFn, retryAfter * 1000);
     }
 
     request(callContext: RequestHandlerCallContext)
@@ -258,7 +262,7 @@ class RequestHandler
             }
             else
             {
-                TurbulenzEngine.request(callContext.src, responseCallback);
+                turbulenzEngine.request(callContext.src, responseCallback);
             }
         };
 
@@ -350,7 +354,7 @@ class RequestHandler
 
         rh.notifiedConnectionLost = false;
         rh.connected = true;
-        rh.reconnectedObserver = Observer.create();
+        rh.reconnectedObserver = observeri.Observer.create();
         rh.reconnectTest = null;
 
         /* tslint:disable:no-empty */

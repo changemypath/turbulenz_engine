@@ -1,4 +1,9 @@
 // Copyright (c) 2012 Turbulenz Limited
+import requesthandleri = require('../requesthandler.ts');
+import u = require('../utilities.ts');
+import turbulenzservicesi = require('./turbulenzservices.ts');
+import multiplayersessioni = require('./multiplayersession.ts');
+import gamesessioni = require('./gamesession.ts');
 
 /*global TurbulenzServices: false*/
 /*global MultiPlayerSession: false*/
@@ -6,10 +11,10 @@
 //
 // API
 //
-class MultiPlayerSessionManager
+export class MultiPlayerSessionManager
 {
-    requestHandler: RequestHandler;
-    gameSession: GameSession;
+    requestHandler: requesthandleri.RequestHandler;
+    gameSession: gamesessioni.GameSession;
     sessionList: any[];
 
     // Public API
@@ -37,7 +42,7 @@ class MultiPlayerSessionManager
             var sessionData = jsonResponse.data;
             sessionData.requestHandler = requestHandler;
             sessionData.gameSessionId = gameSessionId;
-            mpSession = MultiPlayerSession.create(sessionData, sessionCreatedFn, errorCallbackFn);
+            mpSession = multiplayersessioni.MultiPlayerSession.create(sessionData, sessionCreatedFn, errorCallbackFn);
             that.sessionList.push(mpSession);
         };
 
@@ -46,7 +51,7 @@ class MultiPlayerSessionManager
     }
 
     getJoinRequestQueue() {
-        return TurbulenzServices.multiplayerJoinRequestQueue;
+        return turbulenzservicesi.TurbulenzServices.multiplayerJoinRequestQueue;
     }
 
     joinSession(sessionID, sessionJoinedFn, errorCallbackFn)
@@ -70,7 +75,7 @@ class MultiPlayerSessionManager
             var sessionData = jsonResponse.data;
             sessionData.requestHandler = requestHandler;
             sessionData.gameSessionId = gameSessionId;
-            mpSession = MultiPlayerSession.create(sessionData, sessionJoinedFn, errorCallbackFn);
+            mpSession = multiplayersessioni.MultiPlayerSession.create(sessionData, sessionJoinedFn, errorCallbackFn);
             that.sessionList.push(mpSession);
         };
 
@@ -102,7 +107,7 @@ class MultiPlayerSessionManager
             {
                 sessionData.requestHandler = requestHandler;
                 sessionData.gameSessionId = gameSessionId;
-                mpSession = MultiPlayerSession.create(sessionData, sessionJoinedFn, errorCallbackFn);
+                mpSession = multiplayersessioni.MultiPlayerSession.create(sessionData, sessionJoinedFn, errorCallbackFn);
                 that.sessionList.push(mpSession);
             }
             else
@@ -163,10 +168,10 @@ class MultiPlayerSessionManager
     {
         if (!errorFn)
         {
-            errorFn = TurbulenzServices.defaultErrorCallback;
+            errorFn = turbulenzservicesi.TurbulenzServices.defaultErrorCallback;
         }
 
-        if (TurbulenzServices.available())
+        if (turbulenzservicesi.TurbulenzServices.available())
         {
             request.callback = function requestCallbackFn(jsonResponse,
                                                           status)
@@ -182,7 +187,7 @@ class MultiPlayerSessionManager
                 }
             };
 
-            TurbulenzServices.getService('multiplayer').request(request);
+            turbulenzservicesi.TurbulenzServices.getService('multiplayer').request(request);
         }
         else
         {
@@ -193,8 +198,8 @@ class MultiPlayerSessionManager
         }
     }
 
-    static create(requestHandler: RequestHandler,
-                  gameSession: GameSession): MultiPlayerSessionManager
+    static create(requestHandler: requesthandleri.RequestHandler,
+                  gameSession: gamesessioni.GameSession): MultiPlayerSessionManager
     {
         var manager = new MultiPlayerSessionManager();
         manager.requestHandler = requestHandler;

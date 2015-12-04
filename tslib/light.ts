@@ -1,11 +1,17 @@
 // Copyright (c) 2010-2014 Turbulenz Limited
-/*global TurbulenzEngine: false */
+import materiali = require('./material.ts');
+import scenenodei = require('./scenenode.ts');
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,TextureParameters,VertexBufferParameters,IndexBufferParameters,RenderTargetParameters,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../tslib/turbulenz.d.ts';
+import {VMath} from '../jslib-modular/vmath.d.ts';
+import {turbulenzEngine} from '../tslib/turbulenz.d.ts';
+
+/*global turbulenzEngine: false */
 /*global VMath: false */
 
 //
 // Light
 //
-class Light
+export class Light
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -33,9 +39,9 @@ class Light
     disabled            : boolean;
     dynamic             : boolean;
 
-    material            : Material;
+    material            : materiali.Material;
     techniqueParameters : TechniqueParameters;
-    sharedMaterial      : Material;
+    sharedMaterial      : materiali.Material;
 
     fog                 : boolean;
     global              : boolean;
@@ -88,7 +94,7 @@ class Light
     {
         var light = new Light();
 
-        var mathDevice = TurbulenzEngine.getMathDevice();
+        var mathDevice = turbulenzEngine.getMathDevice();
 
         var abs = Math.abs;
         var max = Math.max;
@@ -248,13 +254,13 @@ class Light
 //
 // Light Instance
 //
-class LightInstance
+export class LightInstance
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
     /* tslint:enable:no-unused-variable */
 
-    node               : SceneNode;
+    node               : scenenodei.SceneNode;
     light              : Light;
     worldExtents       : any; // arrayConstructor(6);
     worldExtentsUpdate : number;
@@ -317,7 +323,7 @@ class LightInstance
     //
     // getNode
     //
-    getNode() : SceneNode
+    getNode() : scenenodei.SceneNode
     {
         return this.node;
     }

@@ -1,4 +1,7 @@
 // Copyright (c) 2013 Turbulenz Limited
+
+import g = require('globals');
+
 //
 //  SimpleFonts
 //  ===========
@@ -68,8 +71,7 @@ SimpleFontRenderer.prototype =
     drawFont : function simpleFontRendererDrawFontFn(string, inputParams)
     {
         //Add some stuff to my list.
-        var globals   = this.globals;
-        var md        = globals.mathDevice;
+        var md        = g.mathDevice;
         var params    = this.allocateParams();
         params.string = string;
 
@@ -243,7 +245,7 @@ SimpleFontRenderer.prototype =
 
     preload : function simplefontsPreloadFn()
     {
-        var fontManager = this.globals.fontManager;
+        var fontManager = g.fontManager;
         //Relies on shader and font manager having their path remapping done.
         var fontsList = this.fontsList;
         var fontSizes = this.fontSizes;
@@ -259,16 +261,15 @@ SimpleFontRenderer.prototype =
             }
         }
 
-        this.globals.shaderManager.load('shaders/font.cgfx');
+        g.shaderManager.load('shaders/font.cgfx');
     },
 
     hasLoaded : function simpleFontRendererHasLoadedFn()
     {
-        var globals = this.globals;
-        var fontManager = globals.fontManager;
-        var shaderManager = globals.shaderManager;
-        var md = globals.mathDevice;
-        var gd = globals.graphicsDevice;
+        var fontManager = g.fontManager;
+        var shaderManager = g.shaderManager;
+        var md = g.mathDevice;
+        var gd = g.graphicsDevice;
 
         if (fontManager.getNumPendingFonts() === 0 &&
             shaderManager.getNumPendingShaders() === 0)
@@ -321,8 +322,8 @@ SimpleFontRenderer.prototype =
             return;
         }
 
-        var md = this.globals.mathDevice;
-        var gd = this.globals.graphicsDevice;
+        var md = g.mathDevice;
+        var gd = g.graphicsDevice;
 
         var width = gd.width;
         var height = gd.height;
@@ -367,7 +368,7 @@ SimpleFontRenderer.prototype =
         var params = this.textCache[this.textCacheIndex];
         if (!params)
         {
-            var md = this.globals.mathDevice;
+            var md = g.mathDevice;
             params = {
                     string : null,
                     spacing : 0,
@@ -392,13 +393,13 @@ SimpleFontRenderer.create = function simpleFontRendererCreateFn(globals)
 {
     var simpleFontRenderer = new SimpleFontRenderer();
 
-    simpleFontRenderer.globals = globals;
+    simpleFontRenderer.globals = g;
 
     simpleFontRenderer.textToDraw = [];
     simpleFontRenderer.textCache = [];
     simpleFontRenderer.textCacheIndex = 0;
 
-    simpleFontRenderer.fontsList = globals.fonts || {};
+    simpleFontRenderer.fontsList = g.fonts || {};
     simpleFontRenderer.fonts = {};
 
     // The standard set of sizes to request (sorted)
@@ -406,11 +407,11 @@ SimpleFontRenderer.create = function simpleFontRendererCreateFn(globals)
     simpleFontRenderer.fontSizeMax = fontSizes[0];
     simpleFontRenderer.fontSizeMin = fontSizes[fontSizes.length - 1];
 
-    var fontManager = globals.fontManager;
+    var fontManager = g.fontManager;
     simpleFontRenderer.defaultFont = fontManager.get("");
 
     simpleFontRenderer.scratchPad = {
-        v4Black : globals.mathDevice.v4Build(0.0, 0.0, 0.0, 1.0)
+        v4Black : g.mathDevice.v4Build(0.0, 0.0, 0.0, 1.0)
     };
 
     return simpleFontRenderer;

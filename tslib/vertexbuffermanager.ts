@@ -1,19 +1,22 @@
 // Copyright (c) 2010-2013 Turbulenz Limited
+import debugi = require('../tslib/debug.ts');
+var debug = debugi.debug;
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine,VertexBufferParameters} from '../tslib/turbulenz.d.ts';
 
-interface VertexBuffersBucketChunk
+export interface VertexBuffersBucketChunk
 {
     length: number;
     baseIndex: number;
     nextChunk: VertexBuffersBucketChunk;
 };
 
-interface VertexBuffersBucket
+export interface VertexBuffersBucket
 {
     headChunk: any;
 
 };
 
-interface VertexBuffersPool
+export interface VertexBuffersPool
 {
     attributesHash: string;
     vertexBufferData: {
@@ -22,7 +25,7 @@ interface VertexBuffersPool
     }[];
 };
 
-interface VertexBufferAllocation
+export interface VertexBufferAllocation
 {
     vertexBuffer: VertexBuffer;
     baseIndex: number;
@@ -34,7 +37,7 @@ interface VertexBufferAllocation
 // VertexBufferManager
 //
 
-class VertexBufferManager
+export class VertexBufferManager
 {
     static version = 1;
 

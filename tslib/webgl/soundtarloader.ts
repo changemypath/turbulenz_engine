@@ -1,6 +1,13 @@
 // Copyright (c) 2011-2012 Turbulenz Limited
 
-/*global TurbulenzEngine*/
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,SoundDeviceParameters,SoundParameters,SoundGlobalSource,SoundSource,SoundSourceParameters,SoundArchiveParameters,SoundEffect,SoundEffectParameters,SoundEffectSlot,SoundEffectSlotParameters,SoundFilter,SoundFilterParameters,SoundGlobalSourceParameters,TurbulenzEngine,VertexBufferParameters,PhysicsShape} from '../turbulenz.d.ts';
+
+import {WebGLSoundDeviceSoundCheckCall,WebGLSoundDeviceSourceMap,WebGLSound,WebGLSoundGlobalSource,WebGLSoundSource,WebGLSoundDeviceExtensions,WebGLAudioPoolItem,WebGLSoundDevice} from './sounddevice.ts';
+
+import {WebGLGraphicsDevice} from './graphicsdevice';
+import {turbulenzEngine} from '../turbulenz.d.ts';
+
+/*global turbulenzEngine*/
 /*global Uint8Array*/
 /*global window*/
 
@@ -49,7 +56,7 @@ if ((typeof ArrayBuffer !== "undefined") &&
 //
 // SoundTARLoader
 //
-class SoundTARLoader
+export class SoundTARLoader
 {
     static version = 1;
 
@@ -271,13 +278,13 @@ class SoundTARLoader
         {
             loader.src = src;
             var xhr;
-            if (window.XMLHttpRequest)
+            if (window["XMLHttpRequest"])
             {
-                xhr = new window.XMLHttpRequest();
+                xhr = new window["XMLHttpRequest"]();
             }
-            else if (window.ActiveXObject)
+            else if (window["ActiveXObject"])
             {
-                xhr = new window.ActiveXObject("Microsoft.XMLHTTP");
+                xhr = new window["ActiveXObject"]("Microsoft.XMLHTTP");
             }
             else
             {
@@ -291,7 +298,7 @@ class SoundTARLoader
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4)
                 {
-                    if (!TurbulenzEngine || !TurbulenzEngine.isUnloading())
+                    if (!turbulenzEngine || !turbulenzEngine.isUnloading())
                     {
                         var xhrStatus = xhr.status;
                         var xhrStatusText = xhr.status !== 0 && xhr.statusText || 'No connection';
@@ -384,7 +391,7 @@ class SoundTARLoader
                                 {
                                     if (0 < loader.soundsLoading)
                                     {
-                                        if (!TurbulenzEngine || !TurbulenzEngine.isUnloading())
+                                        if (!turbulenzEngine || !turbulenzEngine.isUnloading())
                                         {
                                             window.setTimeout(callOnload, 100);
                                         }

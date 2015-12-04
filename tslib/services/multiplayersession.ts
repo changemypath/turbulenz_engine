@@ -1,6 +1,12 @@
 // Copyright (c) 2011-2012 Turbulenz Limited
+import requesthandleri = require('../requesthandler.ts');
+import u = require('../utilities.ts');
+import turbulenzservicesi = require('./turbulenzservices.ts');
+import turbulenzbridgei = require('./turbulenzbridge.ts');
+import turbulenzi = require('../turbulenz.d.ts');
+import {turbulenzEngine} from '../turbulenz.d.ts';
 
-/*global TurbulenzEngine: false*/
+/*global turbulenzEngine: false*/
 /*global TurbulenzServices: false*/
 /*global TurbulenzBridge: false*/
 /*global Utilities: false*/
@@ -9,15 +15,15 @@
 // API
 //
 
-class MultiPlayerSession
+export class MultiPlayerSession
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
     /* tslint:enable:no-unused-variable */
 
-    requestHandler : RequestHandler;
+    requestHandler : requesthandleri.RequestHandler;
     socket         : WebSocket;
-    service        : ServiceRequester;
+    service        : turbulenzservicesi.ServiceRequester;
 
     sessionId      : string;
     playerId       : string;
@@ -95,7 +101,7 @@ class MultiPlayerSession
             data: {'session': sessionId},
             callback: function ()
             {
-                TurbulenzBridge.triggerMultiplayerSessionMakePublic(sessionId);
+                turbulenzbridgei.TurbulenzBridge.triggerMultiplayerSessionMakePublic(sessionId);
                 if (callbackFn)
                 {
                     callbackFn.call(arguments);
@@ -139,9 +145,9 @@ class MultiPlayerSession
 
             // we can't wait for the callback as the browser doesn't
             // call async callbacks after onbeforeunload has been called
-            TurbulenzBridge.triggerLeaveMultiplayerSession(sessionId);
+            turbulenzbridgei.TurbulenzBridge.triggerLeaveMultiplayerSession(sessionId);
 
-            Utilities.ajax({
+            u.Utilities.ajax({
                 url: '/api/v1/multiplayer/session/leave',
                 method: 'POST',
                 data: {
@@ -157,7 +163,7 @@ class MultiPlayerSession
         {
             if (callbackFn)
             {
-                TurbulenzEngine.setTimeout(callbackFn, 0);
+                turbulenzi.turbulenzEngine.setTimeout(callbackFn, 0);
             }
         }
     }
@@ -192,7 +198,7 @@ class MultiPlayerSession
         ms.onmessage = null;
         ms.onclose = null;
         ms.requestHandler = sessionData.requestHandler;
-        ms.service = TurbulenzServices.getService('multiplayer');
+        ms.service = turbulenzservicesi.TurbulenzServices.getService('multiplayer');
 
         var numplayers = sessionData.numplayers;
 
@@ -253,7 +259,7 @@ class MultiPlayerSession
                         ms.sessionId = reconnectData.sessionid;
                         ms.playerId = reconnectData.playerid;
 
-                        TurbulenzEngine.setTimeout(multiPlayerConnect, 0);
+                        turbulenzi.turbulenzEngine.setTimeout(multiPlayerConnect, 0);
                     }
                     else
                     {
@@ -287,10 +293,10 @@ class MultiPlayerSession
 
             try
             {
-                var nd = TurbulenzEngine.getNetworkDevice();
+                var nd = turbulenzi.turbulenzEngine.getNetworkDevice();
                 if (!nd)
                 {
-                    nd = TurbulenzEngine.createNetworkDevice({});
+                    nd = turbulenzi.turbulenzEngine.createNetworkDevice({});
                 }
 
                 socket = nd.createWebSocket(serverURL);
@@ -307,7 +313,7 @@ class MultiPlayerSession
 
                     ms.flushQueue();
 
-                    TurbulenzBridge.triggerJoinedMultiplayerSession({
+                    turbulenzbridgei.TurbulenzBridge.triggerJoinedMultiplayerSession({
                         sessionId: ms.sessionId,
                         playerId: ms.playerId,
                         serverURL: serverURL,

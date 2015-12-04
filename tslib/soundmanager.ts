@@ -1,4 +1,5 @@
 // Copyright (c) 2009-2012 Turbulenz Limited
+import {Log} from '../../turbulenz/libs/log.ts';
 
 /*global Observer: false*/
 /*global TurbulenzEngine: false*/

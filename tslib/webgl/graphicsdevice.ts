@@ -1,6 +1,20 @@
+
+
+import {debug} from '../debug.ts';
+import {Log} from '../../libs/log.ts';
+
+import {Shader,ShaderParameter,ShaderParameters,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,TextureParameters,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,SoundDeviceParameters,SoundParameters,SoundGlobalSource,SoundSource,SoundSourceParameters,SoundArchiveParameters,SoundEffect,SoundEffectParameters,SoundEffectSlot,SoundEffectSlotParameters,SoundFilter,SoundFilterParameters,SoundGlobalSourceParameters,TurbulenzEngine,VertexBufferParameters,PhysicsShape,Video,VideoParameters,RenderBufferParameters,RenderTargetParameters,IndexWriteIterator,IndexBufferParameters,VertexWriteIterator,Pass,ShaderParametersPass,GraphicsDeviceMetrics,OcclusionQuery,TimerQuery,TextureArchiveParams,GraphicsDeviceParameters} from '../turbulenz.d.ts';
+import {turbulenzEngine} from '../turbulenz.d.ts';
+
+import {WebGLTurbulenzEngine} from './turbulenzengine';
+import {TGALoader} from './tgaloader';
+import {TARLoaderParameters,TARLoader} from './tarloader';
+import {DDSLoader} from './ddsloader';
+import {_tz_techniqueParameterBufferCreate,VMath} from '../vmath';
+
 // Copyright (c) 2011-2014 Turbulenz Limited
 
-/*global TurbulenzEngine*/
+/*global turbulenzEngine*/
 /*global TGALoader*/
 /*global DDSLoader*/
 /*global TARLoader*/
@@ -21,7 +35,7 @@
 
 // Extra declarations for WebGL-related types.
 
-interface HTMLCanvasElement {
+export interface HTMLCanvasElement {
     getContext(contextId: string, params : {}): WebGLRenderingContext;
     toDataURL(format?: string);
 
@@ -36,7 +50,7 @@ interface HTMLCanvasElement {
 
 }
 
-interface TZWebGLSampler
+export interface TZWebGLSampler
 {
     minFilter: number;
     magFilter: number;
@@ -46,7 +60,7 @@ interface TZWebGLSampler
     maxAnisotropy: number;
 }
 
-interface TZWebGLVideoSupportedExtensions
+export interface TZWebGLVideoSupportedExtensions
 {
     webm?: boolean;
     mp4?: boolean;
@@ -54,7 +68,7 @@ interface TZWebGLVideoSupportedExtensions
 };
 
 // -----------------------------------------------------------------------------
-class TZWebGLTexture implements Texture
+export class TZWebGLTexture implements Texture
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -1151,7 +1165,7 @@ class TZWebGLTexture implements Texture
         {
             if (this.depth > 1)
             {
-                (<WebGLTurbulenzEngine><any>TurbulenzEngine).callOnError(
+                (<WebGLTurbulenzEngine><any>turbulenzEngine).callOnError(
                     "3D texture mipmap generation unsupported");
                 return;
             }
@@ -1408,7 +1422,7 @@ class TZWebGLTexture implements Texture
                 }
                 else
                 {
-                    (<WebGLTurbulenzEngine><any>TurbulenzEngine).callOnError(
+                    (<WebGLTurbulenzEngine><any>turbulenzEngine).callOnError(
                         'Missing image loader required for ' + src);
 
                     tex = TZWebGLTexture.create(gd, {
@@ -1429,9 +1443,9 @@ class TZWebGLTexture implements Texture
 
                     if (params.onload)
                     {
-                        if (TurbulenzEngine)
+                        if (turbulenzEngine)
                         {
-                            TurbulenzEngine.setTimeout(function () {
+                            turbulenzEngine.setTimeout(function () {
                                 params.onload(tex, 200);
                             }, 0);
                         }
@@ -1496,13 +1510,13 @@ class TZWebGLTexture implements Texture
                     if (extension === '.jpg' || extension === '.jpeg')
                     {
                         src = 'data:image/jpeg;base64,' +
-                            (<WebGLTurbulenzEngine><any>TurbulenzEngine)
+                            (<WebGLTurbulenzEngine><any>turbulenzEngine)
                             .base64Encode(data);
                     }
                     else if (extension === '.png')
                     {
                         src = 'data:image/png;base64,' +
-                            (<WebGLTurbulenzEngine><any>TurbulenzEngine)
+                            (<WebGLTurbulenzEngine><any>turbulenzEngine)
                             .base64Encode(data);
                     }
                 }
@@ -1514,7 +1528,7 @@ class TZWebGLTexture implements Texture
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState === 4)
                     {
-                        if (!TurbulenzEngine || !TurbulenzEngine.isUnloading())
+                        if (!turbulenzEngine || !turbulenzEngine.isUnloading())
                         {
                             var xhrStatus = xhr.status;
                             // Fix for loading from file
@@ -1633,7 +1647,7 @@ class TZWebGLTexture implements Texture
 //
 // WebGLVideo
 //
-class WebGLVideo implements Video
+export class WebGLVideo implements Video
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -1772,7 +1786,7 @@ class WebGLVideo implements Video
             if (this.elementAdded)
             {
                 this.elementAdded = false;
-                TurbulenzEngine.canvas.parentElement.removeChild(this.video);
+                turbulenzEngine.canvas.parentElement.removeChild(this.video);
             }
             this.video = null;
         }
@@ -1790,7 +1804,7 @@ class WebGLVideo implements Video
 
         var video = <HTMLVideoElement>(document.createElement('video'));
         video.preload = 'auto';
-        video.autobuffer = true;
+        video["autobuffer"] = true;
         video.muted = true;
         if (looping)
         {
@@ -1824,18 +1838,18 @@ class WebGLVideo implements Video
         {
             //video.setAttribute("style", "display: none;");
             video.setAttribute("style", "visibility: hidden;");
-            TurbulenzEngine.canvas.parentElement.appendChild(video);
+            turbulenzEngine.canvas.parentElement.appendChild(video);
             v.elementAdded = true;
         }
 
-        if (video.webkitDecodedFrameCount !== undefined)
+        if (video["webkitDecodedFrameCount"] !== undefined)
         {
             var lastFrameCount = -1, tell = 0;
             Object.defineProperty(v, "tell", {
                 get : function tellFn() {
-                    if (lastFrameCount !== this.video.webkitDecodedFrameCount)
+                    if (lastFrameCount !== this.video["webkitDecodedFrameCount"])
                     {
-                        lastFrameCount = this.video.webkitDecodedFrameCount;
+                        lastFrameCount = this.video["webkitDecodedFrameCount"];
                         tell = this.video.currentTime;
                     }
                     return tell;
@@ -1902,7 +1916,7 @@ class WebGLVideo implements Video
         video.addEventListener("progress", checkProgress, false);
         video.addEventListener("canplaythrough", videoCanPlay, false);
 
-        video.crossorigin = 'anonymous';
+        video["crossorigin"] = 'anonymous';
         video.src = src;
 
         return v;
@@ -1914,7 +1928,7 @@ class WebGLVideo implements Video
 // WebGLRenderBuffer
 //
 
-class WebGLRenderBuffer implements RenderBuffer
+export class WebGLRenderBuffer implements RenderBuffer
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -2029,7 +2043,7 @@ class WebGLRenderBuffer implements RenderBuffer
 //
 // WebGLRenderTarget
 //
-class WebGLRenderTarget implements RenderTarget
+export class WebGLRenderTarget implements RenderTarget
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -2349,7 +2363,7 @@ class WebGLRenderTarget implements RenderTarget
             var glTexture = colorTexture0._glTexture;
             if (glTexture === undefined)
             {
-                (<WebGLTurbulenzEngine><any>TurbulenzEngine).callOnError(
+                (<WebGLTurbulenzEngine><any>turbulenzEngine).callOnError(
                     "Color texture is not a Texture");
                 gl.bindFramebuffer(gl.FRAMEBUFFER, null);
                 gl.deleteFramebuffer(glObject);
@@ -2440,7 +2454,7 @@ class WebGLRenderTarget implements RenderTarget
         }
         else
         {
-            (<WebGLTurbulenzEngine><any>TurbulenzEngine).callOnError(
+            (<WebGLTurbulenzEngine><any>turbulenzEngine).callOnError(
                 "No RenderBuffers or Textures specified for this RenderTarget");
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
             gl.deleteFramebuffer(glObject);
@@ -2520,14 +2534,14 @@ WebGLRenderTarget.prototype._oldScissorBox = [];
 // IndexBuffer
 //
 
-interface WebGLIndexWriteIterator extends IndexWriteIterator
+export interface WebGLIndexWriteIterator extends IndexWriteIterator
 {
     data: any[];
     offset: number;
     getNumWrittenIndices: { (): number; };
 };
 
-class WebGLIndexBuffer implements IndexBuffer
+export class WebGLIndexBuffer implements IndexBuffer
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -2784,7 +2798,7 @@ class WebGLIndexBuffer implements IndexBuffer
 //
 // WebGLSemantics
 //
-class WebGLSemantics implements Semantics
+export class WebGLSemantics implements Semantics
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -2821,7 +2835,7 @@ class WebGLSemantics implements Semantics
 //
 // WebGLSemanticOffset
 //
-interface WebGLSemanticOffset
+export interface WebGLSemanticOffset
 {
     vertexBuffer: WebGLVertexBuffer;
     offset: number;
@@ -2830,7 +2844,7 @@ interface WebGLSemanticOffset
 //
 // WebGLVertexWriteIterator
 //
-interface WebGLVertexWriteIterator extends VertexWriteIterator
+export interface WebGLVertexWriteIterator extends VertexWriteIterator
 {
     data: any;
     offset: number;
@@ -2841,7 +2855,7 @@ interface WebGLVertexWriteIterator extends VertexWriteIterator
 //
 // WebGLVertexBuffer
 //
-class WebGLVertexBuffer implements VertexBuffer
+export class WebGLVertexBuffer implements VertexBuffer
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -2980,7 +2994,7 @@ class WebGLVertexBuffer implements VertexBuffer
                             }
                             else
                             {
-                                (<WebGLTurbulenzEngine><any>TurbulenzEngine)
+                                (<WebGLTurbulenzEngine><any>turbulenzEngine)
                                     .callOnError(
                                         'Missing values for attribute ' + a);
                                 return null;
@@ -3075,7 +3089,7 @@ class WebGLVertexBuffer implements VertexBuffer
                                 }
                                 else
                                 {
-                                    (<WebGLTurbulenzEngine><any>TurbulenzEngine)
+                                    (<WebGLTurbulenzEngine><any>turbulenzEngine)
                                         .callOnError(
                                             'Missing values for attribute ' + a);
                                     return null;
@@ -3160,7 +3174,7 @@ class WebGLVertexBuffer implements VertexBuffer
                                 }
                                 else
                                 {
-                                    (<WebGLTurbulenzEngine><any>TurbulenzEngine)
+                                    (<WebGLTurbulenzEngine><any>turbulenzEngine)
                                         .callOnError(
                                             'Missing values for attribute ' + a);
                                     return null;
@@ -3657,14 +3671,14 @@ class WebGLVertexBuffer implements VertexBuffer
 // Pass
 //
 
-interface WebGLShaderParameter extends ShaderParameter
+export interface WebGLShaderParameter extends ShaderParameter
 {
     numValues : number;
     values  : any;
     sampler : any;
 };
 
-interface WebGLProgramParameter
+export interface WebGLProgramParameter
 {
     info: WebGLShaderParameter;
     current: any;
@@ -3674,7 +3688,7 @@ interface WebGLProgramParameter
     dirty?: number;
 };
 
-class WebGLShaderProgram
+export class WebGLShaderProgram
 {
     glProgram : WebGLProgram;
     semanticsMask : number;
@@ -3888,7 +3902,7 @@ class WebGLShaderProgram
     }
 };
 
-interface StateBase
+export interface StateBase
 {
     name: string;
     set: (boolean) => void;
@@ -3896,18 +3910,18 @@ interface StateBase
 };
 
 // Use this in addStateHandler, stateHandlers
-interface StateHandler extends StateBase
+export interface StateHandler extends StateBase
 {
     defaultValues: any[];
     parse: (any) => any;
 };
 
-interface PassState extends StateBase
+export interface PassState extends StateBase
 {
     values: any[];
 };
 
-class WebGLPass implements Pass
+export class WebGLPass implements Pass
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -4038,7 +4052,7 @@ class WebGLPass implements Pass
                     }
                     else
                     {
-                        (<WebGLTurbulenzEngine><any>TurbulenzEngine)
+                        (<WebGLTurbulenzEngine><any>turbulenzEngine)
                             .callOnError(
                                 'Unknown value for state ' + s + ': ' +
                                     states[s]
@@ -4148,7 +4162,7 @@ class WebGLPass implements Pass
 //
 // WebGLTechnique
 //
-class WebGLTechnique implements Technique
+export class WebGLTechnique implements Technique
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -4630,7 +4644,7 @@ class WebGLTechnique implements Technique
 //
 // TZWebGLShader
 //
-class TZWebGLShader implements Shader
+export class TZWebGLShader implements Shader
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -4729,7 +4743,7 @@ class TZWebGLShader implements Shader
                 if (!compiled)
                 {
                     var compilerInfo = gl.getShaderInfoLog(compiledProgram);
-                    (<WebGLTurbulenzEngine><any>TurbulenzEngine).callOnError(
+                    (<WebGLTurbulenzEngine><any>turbulenzEngine).callOnError(
                         'Program "' + p + '" failed to compile: ' + compilerInfo);
                 }
             }
@@ -4749,7 +4763,7 @@ class TZWebGLShader implements Shader
                     if (!linked)
                     {
                         var linkerInfo = gl.getProgramInfoLog(glProgram);
-                        (<WebGLTurbulenzEngine><any>TurbulenzEngine)
+                        (<WebGLTurbulenzEngine><any>turbulenzEngine)
                             .callOnError(
                                 'Program "' + p + '" failed to link: ' +
                                     linkerInfo);
@@ -5036,7 +5050,7 @@ class TZWebGLShader implements Shader
                 {
                     shaderTechniques[p] = null;
 
-                    TurbulenzEngine.setTimeout(createTechniqueLoader(p), 0);
+                    turbulenzEngine.setTimeout(createTechniqueLoader(p), 0);
                 }
                 else
                 {
@@ -5056,7 +5070,7 @@ class TZWebGLShader implements Shader
 //
 // WebGLTechniqueParameters
 //
-class WebGLTechniqueParameters implements TechniqueParameters
+export class WebGLTechniqueParameters implements TechniqueParameters
 {
     [paramName: string]: any;
 
@@ -5088,7 +5102,7 @@ class WebGLTechniqueParameters implements TechniqueParameters
 //
 // WebGLDrawParameters
 //
-class WebGLDrawParameters implements DrawParameters
+export class WebGLDrawParameters implements DrawParameters
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -5456,7 +5470,7 @@ Object.defineProperty(WebGLDrawParameters.prototype, "indexBuffer", {
 //
 // WebGLVAOItem
 //
-interface WebGLVAOItem
+export interface WebGLVAOItem
 {
     endStreams: number;
     vao: any;
@@ -5467,7 +5481,7 @@ interface WebGLVAOItem
 //
 // WebGLGraphicsDevice
 //
-interface WebGLGraphicsDeviceVertexFormat
+export interface WebGLGraphicsDeviceVertexFormat
 {
     name: string;
     numComponents: number;
@@ -5480,7 +5494,7 @@ interface WebGLGraphicsDeviceVertexFormat
     typedArray: any; // ArrayBufferView constructor
 };
 
-interface WebGLGraphicsDeviceState
+export interface WebGLGraphicsDeviceState
 {
     depthTestEnable         : boolean;
     blendEnable             : boolean;
@@ -5521,12 +5535,12 @@ interface WebGLGraphicsDeviceState
     program                 : WebGLProgram;
 };
 
-interface WebGLMetrics extends GraphicsDeviceMetrics
+export interface WebGLMetrics extends GraphicsDeviceMetrics
 {
     addPrimitives: { (primitive: number, count: number) : void; };
 };
 
-interface WebGLCreationCounters
+export interface WebGLCreationCounters
 {
     textures: number;
     vertexBuffers: number;
@@ -5537,7 +5551,7 @@ interface WebGLCreationCounters
     techniques: number;
 };
 
-class WebGLGraphicsDevice implements GraphicsDevice
+export class WebGLGraphicsDevice implements GraphicsDevice
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -7801,7 +7815,7 @@ class WebGLGraphicsDevice implements GraphicsDevice
         }
 
         this._numFrames += 1;
-        var currentFrameTime = TurbulenzEngine.getTime();
+        var currentFrameTime = turbulenzEngine.getTime();
         var diffTime = (currentFrameTime - this._previousFrameTime);
         if (diffTime >= 1000.0)
         {
@@ -8145,7 +8159,7 @@ class WebGLGraphicsDevice implements GraphicsDevice
         }
         else
         {
-            (<WebGLTurbulenzEngine>TurbulenzEngine).callOnError(
+            (<WebGLTurbulenzEngine>turbulenzEngine).callOnError(
                 'Missing archive loader required for ' + src);
             return false;
         }
@@ -8235,57 +8249,59 @@ class WebGLGraphicsDevice implements GraphicsDevice
         if (fullscreen)
         {
             var canvas = this._gl.canvas;
-            if (canvas.webkitRequestFullScreenWithKeys)
+            if (canvas["webkitRequestFullScreenWithKeys"])
             {
-                canvas.webkitRequestFullScreenWithKeys();
+                canvas["webkitRequestFullScreenWithKeys"]();
             }
-            else if (canvas.requestFullScreenWithKeys)
+            else if (canvas["requestFullScreenWithKeys"])
             {
-                canvas.requestFullScreenWithKeys();
+                canvas["requestFullScreenWithKeys"]();
             }
-            else if (canvas.webkitRequestFullScreen)
+            else if (canvas["webkitRequestFullScreen"])
             {
-                canvas.webkitRequestFullScreen(canvas.ALLOW_KEYBOARD_INPUT);
+	        var f: any; // Complains about unknown function signature.
+		f = (canvas["webkitRequestFullScreen"]);
+		if (typeof f === "function") f(canvas["ALLOW_KEYBOARD_INPUT"]);
             }
-            else if (canvas.mozRequestFullScreen)
+            else if (canvas["mozRequestFullScreen"])
             {
-                canvas.mozRequestFullScreen();
+                canvas["mozRequestFullScreen"]();
             }
-            else if (canvas.msRequestFullscreen)
+            else if (canvas["msRequestFullscreen"])
             {
-                canvas.msRequestFullscreen();
+                canvas["msRequestFullscreen"]();
             }
-            else if (canvas.requestFullScreen)
+            else if (canvas["requestFullScreen"])
             {
-                canvas.requestFullScreen();
+                canvas["requestFullScreen"]();
             }
-            else if (canvas.requestFullscreen)
+            else if (canvas["requestFullscreen"])
             {
-                canvas.requestFullscreen();
+                canvas["requestFullscreen"]();
             }
         }
         else
         {
             /* tslint:disable:no-string-literal */
-            if (document.webkitCancelFullScreen)
+            if (document["webkitCancelFullScreen"])
             {
-                document.webkitCancelFullScreen();
+                document["webkitCancelFullScreen"]();
             }
             else if (document['mozCancelFullScreen'])
             {
                 document['mozCancelFullScreen']();
             }
-            else if (document.msExitFullscreen)
+            else if (document["msExitFullscreen"])
             {
-                document.msExitFullscreen();
+                document["msExitFullscreen"]();
             }
-            else if (document.cancelFullScreen)
+            else if (document["cancelFullScreen"])
             {
-                document.cancelFullScreen();
+                document["cancelFullScreen"]();
             }
-            else if (document.exitFullscreen)
+            else if (document["exitFullscreen"])
             {
-                document.exitFullscreen();
+                document["exitFullscreen"]();
             }
             /* tslint:enable:no-string-literal */
         }
@@ -10052,8 +10068,8 @@ class WebGLGraphicsDevice implements GraphicsDevice
                 get : function getFullscreenFn() {
                     return (document.fullscreenElement ||
                             document.webkitFullscreenElement ||
-                            document.mozFullScreenElement ||
-                            document.msFullscreenElement ?
+                            document["mozFullScreenElement"] ||
+                            document["msFullscreenElement"] ?
                             true : false);
                 },
                 set : function setFullscreenFn(newFullscreen) {
@@ -10102,7 +10118,7 @@ class WebGLGraphicsDevice implements GraphicsDevice
 
         gd.fps = 0;
         gd._numFrames = 0;
-        gd._previousFrameTime = TurbulenzEngine.getTime();
+        gd._previousFrameTime = turbulenzEngine.getTime();
 
         gd._techniqueParametersArray = [];
 

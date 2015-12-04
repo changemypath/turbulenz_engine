@@ -1,11 +1,13 @@
 // Copyright (c) 2012 Turbulenz Limited
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../../tslib/turbulenz.d.ts';
+import {turbulenzEngine} from '../turbulenz.d.ts';
 
-/*global TurbulenzEngine: false*/
+/*global turbulenzEngine: false*/
 
 //
 // SessionToken
 //
-class SessionToken
+export class SessionToken
 {
     static version = 1;
 
@@ -34,7 +36,7 @@ class SessionToken
         bytes[5] = (count & 0x0000FF00) >>> 8;
         /*jshint bitwise: true*/
 
-        return TurbulenzEngine.base64Encode(bytes);
+        return turbulenzEngine.base64Encode(bytes);
     }
 
     static create(): SessionToken

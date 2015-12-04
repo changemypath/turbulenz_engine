@@ -1,8 +1,15 @@
-declare var WebGLMathDevice : MathDevice;
+
+import {VMath} from '../vmath';
+import {debug} from '../debug';
+
+
+// declare var WebGLMathDevice : MathDevice;
+// export var WebGLMathDevice: any;
 // Copyright (c) 2011-2013 Turbulenz Limited
 /* global debug: false*/
 /* global VMath: false*/
 /* global WebGLMathDevice: true*/
+export var WebGLMathDevice : any;
 WebGLMathDevice = VMath;
 
 debug.evaluate(function debugSetupMathDevice () {

@@ -1,24 +1,25 @@
 // Copyright (c) 2012-2015 Turbulenz Limited
+// import {BoxTreeRay,BoxTreeRayTestResult,BoxTreeRayTestCallback,BoxTreeExternalNode,BoxTreeNode,BoxTree} from './boxtree.ts';
 
-interface BoxTreeRay
+export interface BoxTreeRay
 {
     origin: any;    // v2
     direction: any; // v2
     maxFactor: number;
 }
 
-interface BoxTreeRayTestResult
+export interface BoxTreeRayTestResult
 {
     factor: number;
 }
 
-interface BoxTreeRayTestCallback
+export interface BoxTreeRayTestCallback
 {
     (tree, externalNode, ray: BoxTreeRay, distance,
      upperBound): BoxTreeRayTestResult;
 }
 
-interface BoxTreeExternalNode
+export interface BoxTreeExternalNode
 {
     boxTreeIndex: number;
 }
@@ -26,7 +27,7 @@ interface BoxTreeExternalNode
 //
 // BoxTreeNode
 //
-class BoxTreeNode
+export class BoxTreeNode
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -86,7 +87,7 @@ class BoxTreeNode
 //
 // BoxTree
 //
-class BoxTree
+export class BoxTree
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;

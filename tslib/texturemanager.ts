@@ -1,19 +1,26 @@
 // Copyright (c) 2009-2012 Turbulenz Limited
+import requesthandleri = require('../tslib/requesthandler.ts');
+import u = require('./utilities.ts');
+import observeri = require('./observer.ts');
+import turbulenzi = require('./turbulenz.d.ts');
+import {Log} from '../../turbulenz/libs/log.ts';
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../tslib/turbulenz.d.ts';
+import {turbulenzEngine} from './turbulenz.d.ts';
 
 /*global Reference: false*/
 /*global Observer: false*/
-/*global TurbulenzEngine: false*/
+/*global turbulenzEngine: false*/
 
 "use strict";
 
-class TextureInstance
+export class TextureInstance
 {
     static version = 1;
 
     name                   : string;
-    texture                : Texture;
-    reference              : Reference;
-    textureChangedObserver : Observer;
+    texture                : turbulenzi.Texture;
+    reference              : u.Reference;
+    textureChangedObserver : observeri.Observer;
 
     //
     // setTexture
@@ -30,7 +37,7 @@ class TextureInstance
     //
     // getTexture
     //
-    getTexture(): Texture
+    getTexture(): turbulenzi.Texture
     {
         return this.texture;
     }
@@ -42,7 +49,7 @@ class TextureInstance
     {
         if (!this.textureChangedObserver)
         {
-            this.textureChangedObserver = Observer.create();
+            this.textureChangedObserver = observeri.Observer.create();
         }
         this.textureChangedObserver.subscribe(observerFunction);
     }
@@ -71,24 +78,24 @@ class TextureInstance
     //
     // TextureInstance.create
     //
-    static create(name: string, texture: Texture) : TextureInstance
+    static create(name: string, texture: turbulenzi.Texture) : TextureInstance
     {
         var textureInstance = new TextureInstance();
         textureInstance.name = name;
         textureInstance.texture = texture;
-        textureInstance.reference = Reference.create(textureInstance);
+        textureInstance.reference = u.Reference.create(textureInstance);
 
         return textureInstance;
     }
 }
 
-interface TextureManagerDelayedTexture
+export interface TextureManagerDelayedTexture
 {
     nomipmaps: boolean;
     onload: { (texture: Texture): void; };
 }
 
-interface TextureManagerArchive
+export interface TextureManagerArchive
 {
     textures: { [path: string]: Texture; };
 }
@@ -97,21 +104,21 @@ interface TextureManagerArchive
   @class  Texture manager
   @private
 
-  @since TurbulenzEngine 0.1.0
+  @since turbulenzEngine 0.1.0
 */
-class TextureManager
+export class TextureManager
 {
     static version = 1;
 
     textureInstances: { [idx: string]: TextureInstance; };
     loadingTexture: { [idx: string]: boolean; };
-    loadedTextureObservers: { [idx: string]: Observer; };
+    loadedTextureObservers: { [idx: string]: observeri.Observer; };
     delayedTextures: { [idx: string]: TextureManagerDelayedTexture; };
     numLoadingTextures: number;
 
     archivesLoaded: { [path: string]: TextureManagerArchive; };
     loadingArchives: { [path: string]: TextureManagerArchive; };
-    loadedArchiveObservers: { [path: string]: Observer; };
+    loadedArchiveObservers: { [path: string]: observeri.Observer; };
     numLoadingArchives: number;
 
     internalTexture: { [path: string]: boolean; };
@@ -119,8 +126,8 @@ class TextureManager
     pathPrefix: string;
 
     graphicsDevice: GraphicsDevice;
-    requestHandler: RequestHandler;
-    defaultTexture: Texture;
+    requestHandler: requesthandleri.RequestHandler;
+    defaultTexture: turbulenzi.Texture;
     errorCallback: { (msg?: string): void; };
 
     onTextureInstanceDestroyed: { (textureInstance: TextureInstance): void; };
@@ -206,7 +213,7 @@ class TextureManager
       @return {Texture} object, returns the default Texture if the file at given path is not yet loaded
     */
 
-    load(path, nomipmaps?, onTextureLoaded?): Texture
+    load(path, nomipmaps?, onTextureLoaded?): turbulenzi.Texture
     {
         var that = this;
 
@@ -237,7 +244,7 @@ class TextureManager
                         mipmaps = false;
                     }
 
-                    var loadedObserver = Observer.create();
+                    var loadedObserver = observeri.Observer.create();
                     this.loadedTextureObservers[path] = loadedObserver;
                     if (onTextureLoaded)
                     {
@@ -301,7 +308,7 @@ class TextureManager
             if (onTextureLoaded)
             {
                 // the callback should always be called asynchronously
-                TurbulenzEngine.setTimeout(function textureAlreadyLoadedFn()
+                turbulenzEngine.setTimeout(function textureAlreadyLoadedFn()
                     {
                         onTextureLoaded(texture);
                     }, 0);
@@ -384,7 +391,7 @@ class TextureManager
                 this.loadingArchives[path] = { textures: {} };
                 this.numLoadingArchives += 1;
 
-                var observer = Observer.create();
+                var observer = observeri.Observer.create();
                 this.loadedArchiveObservers[path] = observer;
                 if (onArchiveLoaded)
                 {
@@ -512,7 +519,7 @@ class TextureManager
                     {
                         numTexturesLoading += 1;
                         // the callback should always be called asynchronously
-                        TurbulenzEngine.setTimeout(textureAlreadyLoadedWrapper(texturesInArchive[t]), 0);
+                        turbulenzEngine.setTimeout(textureAlreadyLoadedWrapper(texturesInArchive[t]), 0);
                     }
                 }
             }
@@ -708,7 +715,7 @@ class TextureManager
       @return {TextureManager} object, null if failed
     */
     static create(graphicsDevice: GraphicsDevice,
-                  requestHandler: RequestHandler,
+                  requestHandler: requesthandleri.RequestHandler,
                   dt: Texture,
                   errorCallback,
                   log?: HTMLElement) : TextureManager

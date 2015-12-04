@@ -1,13 +1,21 @@
 // Copyright (c) 2009-2014 Turbulenz Limited
+import debugi = require('../tslib/debug.ts');
+import scenei = require('../tslib/scene.ts');
+import scenenodei = require('../tslib/scenenode.ts');
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../tslib/turbulenz.d.ts';
+import {turbulenzEngine} from '../tslib/turbulenz.d.ts';
+
+var debug = debugi.debug;
+
 /*global TurbulenzEngine: false*/
 
-interface Bounds
+export interface Bounds
 {
     center: any;     // v3
     halfExtent: any; // v3
 };
 
-interface Hierarchy
+export interface Hierarchy
 {
     numNodes: number;
     names: string[];
@@ -15,7 +23,7 @@ interface Hierarchy
 };
 
 // TODO: Is this logically correct?
-interface Skeleton extends Hierarchy
+export interface Skeleton extends Hierarchy
 {
     invBoneLTMs: any[]; // m43[]
     bindPoses?: any[]; // m43[]
@@ -23,7 +31,7 @@ interface Skeleton extends Hierarchy
 
 // TODO: There is more we can add to this.  It can also be turned into
 // a full class so we share some implementations.
-interface ControllerBaseClass
+export interface ControllerBaseClass
 {
     mathDevice: MathDevice;
     bounds: Bounds;
@@ -58,7 +66,7 @@ interface ControllerBaseClass
 
 // TODO: This current shares a name with the Animation global.  Can we rename the global?  Is it internal?
 
-interface Animation
+export interface Animation
 {
     length: number;
     nodeData: any;
@@ -66,7 +74,7 @@ interface Animation
     bounds: any;
 };
 
-var AnimationMath =
+export var AnimationMath =
 {
 
     quatPosscalefromm43: function quatPosscalefromm43Fn(matrix, mathDevice)
@@ -118,7 +126,7 @@ var AnimationMath =
 
 };
 
-var AnimationChannels =
+export var AnimationChannels =
 {
     copy: function animationChannelsCopyFn(channels)
     {
@@ -170,7 +178,7 @@ var AnimationChannels =
     }
 };
 
-var Animation =
+export var Animation =
 {
     minKeyframeDelta: 0.0001, // Don't interpolate keyframes when the delta is less than 0.1ms
 
@@ -259,7 +267,7 @@ var Animation =
 //
 // InterpolatorController
 //
-class InterpolatorController implements ControllerBaseClass
+export class InterpolatorController implements ControllerBaseClass
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -949,7 +957,7 @@ class InterpolatorController implements ControllerBaseClass
         var i = new InterpolatorController();
         i.hierarchy = hierarchy;
 
-        var md = TurbulenzEngine.getMathDevice();
+        var md = turbulenzEngine.getMathDevice();
         i.mathDevice = md;
         i.bounds = { center: md.v3BuildZero(), halfExtent: md.v3BuildZero() };
 
@@ -992,7 +1000,7 @@ InterpolatorController.prototype.scratchV3 = null;
 // This controller works off a base interpolator and copies all it's output data
 // but allows a list of controllers and nodes to overload the output
 // Note it only overloads the output quat pos and not any bounds etc
-class OverloadedNodeController
+export class OverloadedNodeController
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -1103,13 +1111,13 @@ class OverloadedNodeController
         c.dirty = true;
         c.dirtyBounds = true;
 
-        c.mathDevice = TurbulenzEngine.getMathDevice();
+        c.mathDevice = turbulenzEngine.getMathDevice();
 
         return c;
     }
 }
 
-class ReferenceController
+export class ReferenceController
 {
     // Controller Base
     mathDevice: MathDevice;
@@ -1173,7 +1181,7 @@ class ReferenceController
 
 // The TransitionController interpolates between the fixed state of
 // input controllers across a period of time
-class TransitionController implements ControllerBaseClass
+export class TransitionController implements ControllerBaseClass
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -1401,7 +1409,7 @@ class TransitionController implements ControllerBaseClass
     {
         var c = new TransitionController();
 
-        var md = TurbulenzEngine.getMathDevice();
+        var md = turbulenzEngine.getMathDevice();
         c.mathDevice = md;
         c.bounds = { center: md.v3BuildZero(), halfExtent: md.v3BuildZero() };
 
@@ -1419,7 +1427,7 @@ class TransitionController implements ControllerBaseClass
 }
 
 // The BlendController blends between the animating state of input controllers given a user specified delta
-class BlendController implements ControllerBaseClass
+export class BlendController implements ControllerBaseClass
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -1670,7 +1678,7 @@ class BlendController implements ControllerBaseClass
         }
 
 
-        var md = TurbulenzEngine.getMathDevice();
+        var md = turbulenzEngine.getMathDevice();
         c.mathDevice = md;
         c.bounds = { center: md.v3BuildZero(), halfExtent: md.v3BuildZero() };
 
@@ -1704,7 +1712,7 @@ class BlendController implements ControllerBaseClass
 BlendController.prototype.scratchV3 = null;
 
 // The MaskController takes joints from various controllers based on a per joint mask
-class MaskController implements ControllerBaseClass
+export class MaskController implements ControllerBaseClass
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -1989,7 +1997,7 @@ class MaskController implements ControllerBaseClass
             AnimationChannels.add(c.outputChannels, inputController.outputChannels);
         }
 
-        var md = TurbulenzEngine.getMathDevice();
+        var md = turbulenzEngine.getMathDevice();
         c.mathDevice = md;
         c.bounds = { center: md.v3BuildZero(), halfExtent: md.v3BuildZero() };
 
@@ -2003,7 +2011,7 @@ class MaskController implements ControllerBaseClass
 }
 
 // The PoseController allows the user to set a fixed set of joint transforms to pose a hierarchy
-class PoseController implements ControllerBaseClass
+export class PoseController implements ControllerBaseClass
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -2132,12 +2140,12 @@ class PoseController implements ControllerBaseClass
     // Constructor function
     static create(hierarchy: Hierarchy): PoseController
     {
-        var mathDevice = TurbulenzEngine.getMathDevice();
+        var mathDevice = turbulenzEngine.getMathDevice();
 
         var c = new PoseController();
         c.hierarchy = hierarchy;
 
-        var md = TurbulenzEngine.getMathDevice();
+        var md = turbulenzEngine.getMathDevice();
         c.mathDevice = md;
         c.bounds = { center: md.v3BuildZero(), halfExtent: md.v3BuildZero() };
 
@@ -2163,7 +2171,7 @@ class PoseController implements ControllerBaseClass
 //
 // NodeTransformController
 //
-class NodeTransformController
+export class NodeTransformController
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -2184,7 +2192,7 @@ class NodeTransformController
 
     ltms: any[];     // m43[]  bone-local to model space?
     nodesMap: any[]; // TODO: Node
-    scene: Scene;
+    scene: scenei.Scene;
     inputController: ControllerBaseClass;
 
     addTime(delta)
@@ -2358,7 +2366,7 @@ class NodeTransformController
     }
 
     // Constructor function
-    static create(hierarchy: Hierarchy, scene: Scene): NodeTransformController
+    static create(hierarchy: Hierarchy, scene: scenei.Scene): NodeTransformController
     {
         var c = new NodeTransformController();
 
@@ -2371,13 +2379,13 @@ class NodeTransformController
         c.scene = scene;
         c.setHierarchy(hierarchy);
 
-        c.mathDevice = TurbulenzEngine.getMathDevice();
+        c.mathDevice = turbulenzEngine.getMathDevice();
 
         return c;
     }
 }
 
-interface SkinControllerBase
+export interface SkinControllerBase
 {
     dirty: boolean;
     skeleton: Skeleton;
@@ -2391,7 +2399,7 @@ interface SkinControllerBase
 //
 // SkinController
 //
-class SkinController implements SkinControllerBase
+export class SkinController implements SkinControllerBase
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -2498,7 +2506,7 @@ class SkinController implements SkinControllerBase
 //
 // GPUSkinController
 //
-class GPUSkinController implements SkinControllerBase
+export class GPUSkinController implements SkinControllerBase
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -2661,7 +2669,7 @@ GPUSkinController.prototype.defaultBufferSize = undefined;
 // SkinnedNode
 //
 // TODO: Extends SceneNode?
-class SkinnedNode
+export class SkinnedNode
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -2670,7 +2678,7 @@ class SkinnedNode
     md: MathDevice;
     input: ControllerBaseClass;
     skinController: SkinControllerBase;
-    node: SceneNode;
+    node: scenenodei.SceneNode;
 
     // prototype
     scratchM43 : any;
@@ -2900,7 +2908,7 @@ class SkinnedNode
 
     // Constructor function
     static create(gd: GraphicsDevice, md: MathDevice,
-                  node: SceneNode,
+                  node: scenenodei.SceneNode,
                   skeleton: Skeleton,
                   inputController?: ControllerBaseClass,
                   bufferSize?: number): SkinnedNode

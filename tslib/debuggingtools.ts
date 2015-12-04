@@ -1,4 +1,5 @@
 // Copyright (c) 2012-2014 Turbulenz Limited
+import {Log} from '../../turbulenz/libs/log.ts';
 
 // Allows the 'debugger' event to be fired when a property of an Object, function, or Array is read or/and written.
 // Use DebuggingTools.dataBreakpoint(someObjectOrArray, "somePropertyOrIndex", breakOnRead, breakOnWrite);

@@ -1,15 +1,29 @@
 // Copyright (c) 2010-2014 Turbulenz Limited
-/*global TurbulenzEngine: false*/
+// import {Renderable,SceneNode} from '../tslib/scenenode.ts';
+import geometryi = require('./geometry.ts');
+import materiali = require('./material.ts');
+import animationi = require('./animation.ts');
+import camerai = require('./camera.ts');
+import scenei = require('./scene.ts');
+import observeri = require('./observer.ts');
+import lighti = require('./light.ts');
+import physicsmanageri = require('./physicsmanager.ts');
+import debugi = require('./debug.ts');
+var debug = debugi.debug;
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../tslib/turbulenz.d.ts';
+import {turbulenzEngine} from '../tslib/turbulenz.d.ts';
+
+/*global turbulenzEngine: false*/
 /*global Utilities: false*/
 /*global Observer: false*/
 
 //
 // Renderable
 //
-interface Renderable
+export interface Renderable
 {
 
-    geometry: Geometry;
+    geometry: geometryi.Geometry;
     geometryType: string;
     node: SceneNode;
 
@@ -17,9 +31,9 @@ interface Renderable
     rendererInfo: any; // TODO?
     distance: number;
     drawParameters: DrawParameters[];
-    sharedMaterial: Material;
+    sharedMaterial: materiali.Material;
 
-    skinController?: ControllerBaseClass;
+    skinController?: animationi.ControllerBaseClass;
 
     center: any; // v3
     halfExtents: any; // v3 / v6?
@@ -40,7 +54,7 @@ interface Renderable
 //
 // SceneNode
 //
-class SceneNode
+export class SceneNode
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -75,29 +89,29 @@ class SceneNode
 
     spatialIndex                   : number;
 
-    camera                          : Camera;
+    camera                          : camerai.Camera;
 
     parent                          : SceneNode;
     notifiedParent                  : boolean;
-    scene                           : Scene;
+    scene                           : scenei.Scene;
     children                        : SceneNode[];
     childNeedsUpdateCount           : number;
 
-    clonedObserver                  : Observer;
-    destroyedObserver               : Observer;
+    clonedObserver                  : observeri.Observer;
+    destroyedObserver               : observeri.Observer;
 
     // Lights
-    lightInstances                  : LightInstance[];
+    lightInstances                  : lighti.LightInstance[];
 
     // Animation
     skin                            : any; // TODO:
 
     // Physics
-    physicsNodes                    : PhysicsNode[];
+    physicsNodes                    : physicsmanageri.PhysicsNode[];
     kinematic: boolean;
 
     // Geometry
-    geometryinstances               : { [name: string]: GeometryInstance; };
+    geometryinstances               : { [name: string]: geometryi.GeometryInstance; };
 
     // // During loading
     // reference: string;
@@ -127,7 +141,7 @@ class SceneNode
         var md = this.mathDevice;
         if (!md)
         {
-            md = TurbulenzEngine.getMathDevice();
+            md = turbulenzEngine.getMathDevice();
             SceneNode.prototype.mathDevice = md;
         }
 
@@ -380,7 +394,7 @@ class SceneNode
     //
     //addedToScene
     //
-    addedToScene(scene: Scene): void
+    addedToScene(scene: scenei.Scene): void
     {
         //private function, used by the Scene
 
@@ -455,9 +469,9 @@ class SceneNode
         {
             if (!this.dynamic && this.getRoot().scene)
             {
-                if (TurbulenzEngine.onperformancewarning)
+                if (turbulenzEngine.onperformancewarning)
                 {
-                    TurbulenzEngine.onperformancewarning("Changing local transform of static SceneNode '" + this.name +
+                    turbulenzEngine.onperformancewarning("Changing local transform of static SceneNode '" + this.name +
                                                          "' whilst still added to a Scene." +
                                                          "If this message appears frequently, performance of your" +
                                                          " game may be affected.");
@@ -911,7 +925,7 @@ class SceneNode
         while (0 < numNodes);
     }
 
-    _updateSpatialMap(scene: Scene): void
+    _updateSpatialMap(scene: scenei.Scene): void
     {
         var worldExtents = this.worldExtents;
         if (worldExtents)
@@ -1833,7 +1847,7 @@ class SceneNode
     {
         if (!this.clonedObserver)
         {
-            this.clonedObserver = Observer.create();
+            this.clonedObserver = observeri.Observer.create();
         }
         this.clonedObserver.subscribe(observerFunction);
     }
@@ -1853,7 +1867,7 @@ class SceneNode
     {
         if (!this.destroyedObserver)
         {
-            this.destroyedObserver = Observer.create();
+            this.destroyedObserver = observeri.Observer.create();
         }
         this.destroyedObserver.subscribe(observerFunction);
     }

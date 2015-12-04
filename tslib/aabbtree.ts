@@ -1,7 +1,10 @@
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice} from '../tslib/turbulenz.d';
+import {debug} from './debug';
+
 // Copyright (c) 2009-2014 Turbulenz Limited
 /*global Float32Array: false*/
 
-interface AABBTreeRayTestResult
+export interface AABBTreeRayTestResult
 {
     hitPoint: any;
     hitNormal: any;
@@ -10,7 +13,7 @@ interface AABBTreeRayTestResult
     body?: PhysicsRigidBody;
 };
 
-interface AABBTreeRay
+export interface AABBTreeRay
 {
     origin: any;    // v3
     direction: any; // v3
@@ -21,7 +24,7 @@ interface AABBTreeRay
 // AABBTreeNode
 //
 
-class AABBTreeNode
+export class AABBTreeNode
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -85,7 +88,7 @@ class AABBTreeNode
 //
 // AABBTree
 //
-class AABBTree
+export class AABBTree
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;

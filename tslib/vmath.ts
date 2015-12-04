@@ -1,6 +1,13 @@
 // Copyright (c) 2009-2012 Turbulenz Limited
+// import {_tz_techniqueParameterBufferCreate,VMath} from './vmath';
+// not: import {_tz_techniqueParameterBufferCreate,VMath,TzTechniqueParameterBuffer} from './vmath';
+
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine,VertexBufferParameters,PhysicsShape} from '../tslib/turbulenz.d.ts';
+import {debug} from './debug.ts';
+import {turbulenzEngine} from './turbulenz.d.ts';
+
 /*global Float32Array: false*/
-/*global TurbulenzEngine: false*/
+/*global turbulenzEngine: false*/
 /*global debug: false*/
 
 //
@@ -54,7 +61,7 @@ if ((typeof Float32Array !== "undefined") &&
     };
 }
 
-var VMath : MathDevice =
+export var VMath : MathDevice =
 {
     version : 1,
 
@@ -5877,18 +5884,18 @@ if (typeof Float32Array !== "undefined")
 // If the plugin has a 'getNativeMathDevice' method then VMath should
 // replace the standard MathDevice.
 
-// WebWorkers can import vmath without a TurbulenzEngine variable defined
-if (typeof TurbulenzEngine !== 'undefined' &&
-    TurbulenzEngine.hasOwnProperty('VMath'))
+// WebWorkers can import vmath without a turbulenzEngine variable defined
+if (typeof turbulenzEngine !== 'undefined' &&
+    turbulenzEngine.hasOwnProperty('VMath'))
 {
-    TurbulenzEngine.VMath = VMath;
+    turbulenzEngine.VMath = VMath;
 }
 
 /*
 
 // A child class of Float32Array.  Typescript won't let us inherit
 // from Float32Array so we do it in this manner.
-class TzTechniqueParameterBuffer extends Float32Array implements TechniqueParameterBuffer
+export class TzTechniqueParameterBuffer extends Float32Array implements TechniqueParameterBuffer
 {
     numFloats: number;
     dynamic: boolean;
@@ -5971,7 +5978,7 @@ class TzTechniqueParameterBuffer extends Float32Array implements TechniqueParame
 //
 // TechniqueParameterBuffer
 //
-var _tz_techniqueParameterBufferCreate =
+export var _tz_techniqueParameterBufferCreate =
     function techniqueParameterBufferCreateFn(params): TechniqueParameterBuffer
 {
     var tpbProto = this.tpbProto;
@@ -6061,9 +6068,9 @@ var _tz_techniqueParameterBufferCreate =
     return <TechniqueParameterBuffer><any>(tpb);
 };
 
-if (typeof TurbulenzEngine !== 'undefined' &&
-    TurbulenzEngine.hasOwnProperty('_createTechniqueParameterBuffer'))
+if (typeof turbulenzEngine !== 'undefined' &&
+    turbulenzEngine.hasOwnProperty('_createTechniqueParameterBuffer'))
 {
-    TurbulenzEngine._createTechniqueParameterBuffer =
+    turbulenzEngine._createTechniqueParameterBuffer =
         _tz_techniqueParameterBufferCreate;
 }

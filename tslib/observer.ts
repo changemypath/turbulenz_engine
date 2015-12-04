@@ -3,7 +3,7 @@
 //
 // Observer
 //
-class Observer
+export class Observer
 {
     subscribers: { (): void; }[];
 

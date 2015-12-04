@@ -1,4 +1,13 @@
 // Copyright (c) 2011-2012 Turbulenz Limited
+import {Window,TurbulenzBridgeConfig,TurbulenzBridgeServiceRequestData,TurbulenzBridgeServiceRequest,TurbulenzBridgeServiceResponseData,TurbulenzBridgeServiceResponse,GameSessionCreateRequest,GameSessionCreateResponseMappingTable,GameSessionCreateResponse,GameSessionDestroyRequest,UserDataRequestBase,UserDataGetKeysRequest,userDataExistsRequest,userDataGetRequest,userDataSetRequest,userDataRemoveRequest,userDataRemoveAllRequest,BadgeDescription,BadgeDescriptionList,BadgeMetaResponse,BadgeAddProgressRequest,BadgeProgress,BadgeAddResponse,BadgeProgressList,BadgeReadResponse,Currency,BasketItem,BasketItemList,Basket,CalculatedBasketItem,CalculatedBasketItemList,CalculatedBasket,StoreItem,StoreItemList,StoreOfferingOutput,StoreOffering,StoreOfferingList,StoreOfferingPriceAPI,StoreOfferingAPIResponse,StoreResource,StoreResourceList,StoreMetaData,TransactionRequest,Transaction,TransactionPaymentParameters,TransactionPayment} from './servicedatatypes.d.ts';
+import gamesession = require('./gamesession.ts');
+import turbulenzservices = require('./turbulenzservices.ts');
+import turbulenzbridge = require('./turbulenzbridge.ts');
+import requesthandleri = require('../requesthandler.ts');
+import u = require('../utilities.ts');
+import debugi = require('../debug.ts');
+var debug = debugi.debug;
+
 
 /*global TurbulenzServices*/
 /*global TurbulenzBridge*/
@@ -8,22 +17,22 @@
 // Callback types
 //
 
-interface BadgeManagerErrorCB
+export interface BadgeManagerErrorCB
 {
     (errorMessage: string, status: number, parameters: any[]): void;
 }
 
-interface BadgeManagerUserBadgesCB
+export interface BadgeManagerUserBadgesCB
 {
     (badgeProgressList: BadgeProgressList): void;
 }
 
-interface BadgeManagerAddProgressCB
+export interface BadgeManagerAddProgressCB
 {
     (badgeProgress: BadgeProgress): void;
 }
 
-interface BadgeManagerListBadgesCB
+export interface BadgeManagerListBadgesCB
 {
     (badgeDescriptions: BadgeDescriptionList): void;
 }
@@ -32,16 +41,16 @@ interface BadgeManagerListBadgesCB
 // BadgeManager
 //
 // created by Turbulenzservices.createBadges
-class BadgeManager
+export class BadgeManager
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
     /* tslint:enable:no-unused-variable */
 
-    gameSession: GameSession;
+    gameSession: gamesession.GameSession;
     gameSessionId: string;
-    service: ServiceRequester;
-    requestHandler: RequestHandler;
+    service: turbulenzservices.ServiceRequester;
+    requestHandler: requesthandleri.RequestHandler;
 
     //
     listUserBadges(callbackFn: BadgeManagerUserBadgesCB,
@@ -115,7 +124,7 @@ class BadgeManager
             {
                 var userbadge = jsonResponse.data;
                 userbadge.gameSlug = that.gameSession.gameSlug;
-                TurbulenzBridge.updateUserBadge(userbadge);
+                turbulenzbridge.TurbulenzBridge.updateUserBadge(userbadge);
                 callbackFn(userbadge);
             }
             else
@@ -179,13 +188,13 @@ class BadgeManager
     private _errorCallbackFn()
     {
         var x = Array.prototype.slice.call(arguments);
-        Utilities.log('BadgeManager error: ', x);
+        u.Utilities.log('BadgeManager error: ', x);
     }
 
-    static create(requestHandler: RequestHandler,
-                  gameSession: GameSession): BadgeManager
+    static create(requestHandler: requesthandleri.RequestHandler,
+                  gameSession: gamesession.GameSession): BadgeManager
     {
-        if (!TurbulenzServices.available())
+        if (!turbulenzservices.TurbulenzServices.available())
         {
             return null;
         }
@@ -194,7 +203,7 @@ class BadgeManager
 
         badgeManager.gameSession = gameSession;
         badgeManager.gameSessionId = gameSession.gameSessionId;
-        badgeManager.service = TurbulenzServices.getService('badges');
+        badgeManager.service = turbulenzservices.TurbulenzServices.getService('badges');
         badgeManager.requestHandler = requestHandler;
 
         return badgeManager;

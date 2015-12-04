@@ -1,6 +1,9 @@
 // Copyright (c) 2011-2013 Turbulenz Limited
 
-/*global TurbulenzEngine*/
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,TextureParameters,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,SoundDeviceParameters,SoundParameters,SoundGlobalSource,SoundSource,SoundSourceParameters,SoundArchiveParameters,SoundEffect,SoundEffectParameters,SoundEffectSlot,SoundEffectSlotParameters,SoundFilter,SoundFilterParameters,SoundGlobalSourceParameters,TurbulenzEngine,VertexBufferParameters,PhysicsShape} from '../turbulenz.d.ts';
+import {turbulenzEngine} from '../turbulenz.d.ts';
+
+/*global turbulenzEngine*/
 /*global Uint8Array*/
 /*global Uint16Array*/
 /*global window*/
@@ -10,7 +13,7 @@
 //
 // DDSLoader
 //
-class DDSLoader
+export class DDSLoader
 {
     static version = 1;
 
@@ -657,7 +660,7 @@ class DDSLoader
         };
         if (decoder)
         {
-            TurbulenzEngine.setTimeout(decoder, 0);
+            turbulenzEngine.setTimeout(decoder, 0);
         }
         else
         {
@@ -1899,13 +1902,13 @@ class DDSLoader
         {
             loader.src = src;
             var xhr;
-            if (window.XMLHttpRequest)
+            if (window["XMLHttpRequest"])
             {
-                xhr = new window.XMLHttpRequest();
+                xhr = new window["XMLHttpRequest"]();
             }
-            else if (window.ActiveXObject)
+            else if (window["ActiveXObject"])
             {
-                xhr = new window.ActiveXObject("Microsoft.XMLHTTP");
+                xhr = new window["ActiveXObject"]("Microsoft.XMLHTTP");
             }
             else
             {
@@ -1919,7 +1922,7 @@ class DDSLoader
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4)
                 {
-                    if (!TurbulenzEngine || !TurbulenzEngine.isUnloading())
+                    if (!turbulenzEngine || !turbulenzEngine.isUnloading())
                     {
                         var xhrStatus = xhr.status;
                         var xhrStatusText = xhr.status !== 0 && xhr.statusText || 'No connection';

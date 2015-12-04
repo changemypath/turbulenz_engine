@@ -1,4 +1,17 @@
 // Copyright (c) 2011-2013 Turbulenz Limited
+import {Log} from '../../libs/log.ts';
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine,VertexBufferParameters,PhysicsShape,SystemInfo,SoundDeviceParameters} from '../turbulenz.d.ts';
+import {WebGLNetworkDevice} from './networkdevice.ts';
+import {WebGLInputDevice} from './inputdevice.ts';
+import {WebGLGraphicsDevice} from './graphicsdevice';
+import {VMath} from '../vmath';
+import {WebGLMathDevice} from './mathdevice';
+import {debug} from '../debug';
+
+import {WebGLSoundDeviceSoundCheckCall,WebGLSoundDeviceSourceMap,WebGLSound,WebGLSoundGlobalSource,WebGLSoundSource,WebGLSoundDeviceExtensions,WebGLAudioPoolItem,WebGLSoundDevice} from './sounddevice.ts';
+
+declare var require:(input:any)=>any;
+
 /*global VMath*/
 /*global WebGLGraphicsDevice*/
 /*global WebGLInputDevice*/
@@ -11,27 +24,27 @@
 
 "use strict";
 
-interface Window
+export interface Window
 {
     TurbulenzEngineCanvas: WebGLTurbulenzEngine;
     WebGLTurbulenzEngine: { new(params): WebGLTurbulenzEngine; };
 };
 
-interface Console
+export interface Console
 {
     profiles: any[];
 };
 
-declare var WebGLPhysicsDevice :
-{
-    create(): PhysicsDevice;
-};
+//declare var WebGLPhysicsDevice :
+//{
+//    create(): PhysicsDevice;
+//};
 
 //
 // WebGLTurbulenzEngine
 //
 
-class WebGLTurbulenzEngine implements TurbulenzEngine
+export class WebGLTurbulenzEngine implements TurbulenzEngine
 {
     version = '0.28.0.0';
 
@@ -130,6 +143,7 @@ class WebGLTurbulenzEngine implements TurbulenzEngine
             }
             else
             {
+                var WebGLPhysicsDevice = require('physicsdevice').WebGLPhysicsDevice;
                 physicsDevice = WebGLPhysicsDevice.create(/* params */);
             }
             this.physicsDevice = physicsDevice;
@@ -322,13 +336,13 @@ class WebGLTurbulenzEngine implements TurbulenzEngine
         var that = this;
 
         var xhr;
-        if (window.XMLHttpRequest)
+        if (window["XMLHttpRequest"])
         {
-            xhr = new window.XMLHttpRequest();
+            xhr = new window["XMLHttpRequest"]();
         }
-        else if (window.ActiveXObject)
+        else if (window["ActiveXObject"])
         {
-            xhr = new window.ActiveXObject("Microsoft.XMLHTTP");
+            xhr = new window["ActiveXObject"]("Microsoft.XMLHTTP");
         }
         else
         {
@@ -504,9 +518,9 @@ class WebGLTurbulenzEngine implements TurbulenzEngine
         if (console && console.profile && console.profileEnd)
         {
             console.profileEnd();
-            if (console.profiles)
+            if (console["profiles"])
             {
-                result = console.profiles[console.profiles.length - 1];
+                result = console["profiles"][console["profiles"].length - 1];
             }
         }
 
@@ -525,12 +539,13 @@ class WebGLTurbulenzEngine implements TurbulenzEngine
     static create(params): WebGLTurbulenzEngine
     {
         var tz = new WebGLTurbulenzEngine();
+	tz.time = 0;
 
         var canvas = params.canvas;
         var fillParent = params.fillParent;
 
         // To expose unload (the whole interaction needs a re-design)
-        window.TurbulenzEngineCanvas = tz;
+        window["TurbulenzEngineCanvas"] = tz;
 
         tz.pluginId = params.pluginId;
         tz.plugin = null;
@@ -714,10 +729,10 @@ class WebGLTurbulenzEngine implements TurbulenzEngine
         }
 
         var requestAnimationFrame = (window.requestAnimationFrame       ||
-                                     window.webkitRequestAnimationFrame ||
-                                     window.oRequestAnimationFrame      ||
-                                     window.msRequestAnimationFrame     ||
-                                     window.mozRequestAnimationFrame);
+                                     window["webkitRequestAnimationFrame"] ||
+                                     window["oRequestAnimationFrame"]      ||
+                                     window["msRequestAnimationFrame"]     ||
+                                     window["mozRequestAnimationFrame"]);
         if (requestAnimationFrame)
         {
             tz.setInterval = function (f, t)
@@ -798,9 +813,9 @@ class WebGLTurbulenzEngine implements TurbulenzEngine
             tz.resizeCanvas = function ()
             {
                 if (document.fullscreenElement === canvas ||
-                    document.mozFullScreenElement === canvas ||
-                    document.webkitFullscreenElement === canvas ||
-                    document.msFullscreenElement === canvas)
+                    document["mozFullScreenElement"] === canvas ||
+                    document["webkitFullscreenElement"] === canvas ||
+                    document["msFullscreenElement"] === canvas)
                 {
                     canvas.width = window.innerWidth;
                     canvas.height = window.innerHeight;
@@ -843,8 +858,8 @@ class WebGLTurbulenzEngine implements TurbulenzEngine
             architecture: '',
             cpuDescription: '',
             cpuVendor: '',
-            numPhysicalCores: (navigator.hardwareConcurrency || 1),
-            numLogicalCores: (navigator.hardwareConcurrency || 1),
+            numPhysicalCores: (navigator["hardwareConcurrency"] || 1),
+            numLogicalCores: (navigator["hardwareConcurrency"] || 1),
             ramInMegabytes: 0,
             frequencyInMegaHZ: 0,
             osVersionMajor: 0,
@@ -1109,4 +1124,4 @@ class WebGLTurbulenzEngine implements TurbulenzEngine
     }
 }
 
-window.WebGLTurbulenzEngine = WebGLTurbulenzEngine;
+// export var WebGLTurbulenzEngine : WebGLTurbulenzEngine;

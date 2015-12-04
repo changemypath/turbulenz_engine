@@ -1,13 +1,22 @@
 // Copyright (c) 2011-2012 Turbulenz Limited
+import gamesession = require('./gamesession.ts');
+import turbulenzservices = require('./turbulenzservices.ts');
+import turbulenzbridge = require('./turbulenzbridge.ts');
+import requesthandleri = require('../requesthandler.ts');
+import u = require('../utilities.ts');
+import debugi = require('../debug.ts');
+var debug = debugi.debug;
+import {Shader,Semantics,Technique,DrawParameters,PhysicsDevice,PhysicsPoint2PointConstraint,PhysicsRigidBody,PhysicsWorld,PhysicsCollisionObject,Texture,RenderTarget,RenderBuffer,InputDevice,TechniqueParameters,IndexBuffer,VertexBuffer,MathDevice,TechniqueParameterBuffer,GraphicsDevice,InputDeviceEventListener,PhysicsCharacter,Sound,SoundDevice,TurbulenzEngine} from '../../tslib/turbulenz.d.ts';
+import {turbulenzEngine} from '../turbulenz.d.ts';
 
-/*global TurbulenzEngine: false*/
+/*global turbulenzEngine: false*/
 /*global TurbulenzBridge*/
 /*global TurbulenzServices*/
 
 //
 // API
 //
-class LeaderboardManager
+export class LeaderboardManager
 {
     /* tslint:disable:no-unused-variable */
     static version = 1;
@@ -22,11 +31,11 @@ class LeaderboardManager
 
     maxGetSize = 32;
 
-    gameSession     : GameSession;
+    gameSession     : gamesession.GameSession;
     gameSessionId   : string;
-    errorCallbackFn : ServiceErrorCB;
-    service         : ServiceRequester;
-    requestHandler  : RequestHandler;
+    errorCallbackFn : turbulenzservices.ServiceErrorCB;
+    service         : turbulenzservices.ServiceRequester;
+    requestHandler  : requesthandleri.RequestHandler;
     ready           : boolean;
     meta            : any;
 
@@ -253,7 +262,7 @@ class LeaderboardManager
         // Avoid making an ajax query if the new score is worse than current score
         if ((bestScore && ((sortBy === 1 && score <= bestScore) || (sortBy === -1 && score >= bestScore))))
         {
-            TurbulenzEngine.setTimeout(function () {
+            turbulenzEngine.setTimeout(function () {
                 callbackFn(key, score, false, bestScore);
             }, 0);
             return;
@@ -281,7 +290,7 @@ class LeaderboardManager
                         gameSlug: that.gameSession.gameSlug,
                     };
                     // Trigger notification (only for new best scores).
-                    TurbulenzBridge.updateLeaderBoard(scoreData);
+                    turbulenzbridge.TurbulenzBridge.updateLeaderBoard(scoreData);
                 }
                 meta.bestScore = bestScore;
                 callbackFn(key, score, newBest, bestScore);
@@ -359,17 +368,17 @@ class LeaderboardManager
         }, 'leaderboard.removeall');
     }
 
-    static create(requestHandler: RequestHandler,
-                  gameSession: GameSession,
+    static create(requestHandler: requesthandleri.RequestHandler,
+                  gameSession: gamesession.GameSession,
                   leaderboardMetaReceived?:
                   { (mngr: LeaderboardManager): void; },
                   errorCallbackFn?: { (errMsg: string): void; }
                  ): LeaderboardManager
     {
-        if (!TurbulenzServices.available())
+        if (!turbulenzservices.TurbulenzServices.available())
         {
             // Call error callback on a timeout to get the same behaviour as the ajax call
-            TurbulenzEngine.setTimeout(function () {
+            turbulenzEngine.setTimeout(function () {
                 if (errorCallbackFn)
                 {
                     errorCallbackFn('TurbulenzServices.createLeaderboardManager could not load leaderboards meta data');
@@ -382,8 +391,8 @@ class LeaderboardManager
 
         leaderboardManager.gameSession = gameSession;
         leaderboardManager.gameSessionId = gameSession.gameSessionId;
-        leaderboardManager.errorCallbackFn = errorCallbackFn || TurbulenzServices.defaultErrorCallback;
-        leaderboardManager.service = TurbulenzServices.getService('leaderboards');
+        leaderboardManager.errorCallbackFn = errorCallbackFn || turbulenzservices.TurbulenzServices.defaultErrorCallback;
+        leaderboardManager.service = turbulenzservices.TurbulenzServices.getService('leaderboards');
         leaderboardManager.requestHandler = requestHandler;
         leaderboardManager.ready = false;
 
@@ -426,7 +435,7 @@ class LeaderboardManager
     }
 }
 
-interface LeaderboardDataSpec
+export interface LeaderboardDataSpec
 {
     type?: string;
     size?: number;
@@ -440,7 +449,7 @@ interface LeaderboardDataSpec
 // LeaderboardResult
 // =============================================================================
 
-interface LeaderboardResultsData
+export interface LeaderboardResultsData
 {
     spec: any; // TODO:
     overlap: any; // TODO:
@@ -451,7 +460,7 @@ interface LeaderboardResultsData
     bottom?: boolean;
 }
 
-class LeaderboardResult
+export class LeaderboardResult
 {
     leaderboardManager: LeaderboardManager;
     key: string;
@@ -518,7 +527,7 @@ class LeaderboardResult
         var offsetScore = this.results.ranking[offsetIndex];
         if (!offsetScore)
         {
-            TurbulenzEngine.setTimeout(callbackFn, 0);
+            turbulenzEngine.setTimeout(callbackFn, 0);
             return false;
         }
 
@@ -569,7 +578,7 @@ class LeaderboardResult
 
         if (callbackFn)
         {
-            TurbulenzEngine.setTimeout(callbackWrapperFn, 0);
+            turbulenzEngine.setTimeout(callbackWrapperFn, 0);
         }
     }
 

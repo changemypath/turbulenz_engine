@@ -7,7 +7,7 @@
 //
 // renderingCommonGetTechniqueIndexFn
 //
-var renderingCommonGetTechniqueIndexFn = <{
+export var renderingCommonGetTechniqueIndexFn = <{
     (techniqueName: string): number;
     techniquesIndexMap: { [techniqueName: string] : number; };
     numTechniques: number;
@@ -31,7 +31,7 @@ renderingCommonGetTechniqueIndexFn.numTechniques = 0;
 // renderingCommonSortKeyFn
 //
 /* tslint:disable:no-unused-variable */
-function renderingCommonSortKeyFn(techniqueIndex, materialIndex, nodeIndex?)
+export function renderingCommonSortKeyFn(techniqueIndex, materialIndex, nodeIndex?)
 /* tslint:enable:no-unused-variable */
 {
     var sortKey = ((techniqueIndex * 0x10000) + (materialIndex % 0x10000));
@@ -46,7 +46,7 @@ function renderingCommonSortKeyFn(techniqueIndex, materialIndex, nodeIndex?)
 // renderingCommonCreateRendererInfoFn
 //
 /* tslint:disable:no-unused-variable */
-function renderingCommonCreateRendererInfoFn(renderable)
+export function renderingCommonCreateRendererInfoFn(renderable)
 /* tslint:enable:no-unused-variable */
 {
     var rendererInfo = {
@@ -67,7 +67,7 @@ function renderingCommonCreateRendererInfoFn(renderable)
 // renderingCommonAddDrawParameterFastestFn
 //
 /* tslint:disable:no-unused-variable */
-function renderingCommonAddDrawParameterFastestFn(drawParameters)
+export function renderingCommonAddDrawParameterFastestFn(drawParameters)
 /* tslint:enable:no-unused-variable */
 {
     var array = this.array;
