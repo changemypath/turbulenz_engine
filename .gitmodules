@@ -10,3 +10,6 @@
 [submodule "tools/NvTriStrip"]
 	path = tools/NvTriStrip
 	url = git://github.com/turbulenz/NvTriStrip.git
+[submodule "external/typescript-collections"]
+	path = external/typescript-collections
+	url = git@github.com:sdwlig/typescript-collections.git
